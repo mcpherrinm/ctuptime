@@ -51,6 +51,22 @@
   .log-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .swatches { display: inline-flex; gap: 2px; flex-wrap: wrap; max-width: 6em; }
   .swatch { width: 10px; height: 10px; border-radius: 2px; }
+  .chart-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #bbb;
+    padding: 0.3em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    white-space: nowrap;
+    z-index: 10;
+    display: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    line-height: 1.4;
+  }
+  .chart-tooltip .tt-row { display: flex; align-items: center; gap: 0.4em; }
+  .chart-tooltip .tt-swatch { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto; }
   .logs-actions { display: flex; gap: 0.5em; }
   .logs-actions button { font: inherit; cursor: pointer; }
 </style>
@@ -312,22 +328,25 @@ async function render() {
         stroke: colorFor(di, ci),
         spanGaps: true,
         _path: okPaths[di],
-        value: (u, v, sidx, didx) => {
-          const up = didx == null ? null : uptimes[didx];
-          if (up == null) return "";
-          if (up >= 100) return "100%";
-          return parseFloat(up.toPrecision(8)) + "%";
-        },
+        _endpoint: endpoint,
+        _uptimes: uptimes,
       });
       data.push(ys);
     }
   }
+
+  let focusedIdx = null;
+  const tooltip = document.createElement("div");
+  tooltip.className = "chart-tooltip";
 
   const opts = {
     width: chartDiv.clientWidth || 900,
     height: chartDiv.clientHeight || 500,
     series,
     legend: { show: false },
+    cursor: {
+      focus: { prox: 30 },
+    },
     scales: {
       x: { time: true, range: [xMin, xMax] },
       y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
@@ -341,9 +360,68 @@ async function render() {
         return parseFloat(up.toPrecision(6)) + "%";
       }),
     }],
+    hooks: {
+      ready: [u => {
+        u.over.appendChild(tooltip);
+        u.over.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+      }],
+      setSeries: [(u, sidx, o) => {
+        if (o.focus !== undefined) {
+          focusedIdx = o.focus ? sidx : (focusedIdx === sidx ? null : focusedIdx);
+          updateTooltip(u);
+        }
+      }],
+      setCursor: [updateTooltip],
+    },
   };
+
+  function updateTooltip(u) {
+    if (focusedIdx == null || u.cursor.left == null || u.cursor.left < 0) {
+      tooltip.style.display = "none";
+      return;
+    }
+    const idx = u.cursor.idx;
+    if (idx == null) { tooltip.style.display = "none"; return; }
+    const s = u.series[focusedIdx];
+    const uptime = s._uptimes ? s._uptimes[idx] : null;
+    if (uptime == null) { tooltip.style.display = "none"; return; }
+    const ts = u.data[0][idx];
+    tooltip.innerHTML = "";
+    const tsRow = document.createElement("div");
+    tsRow.className = "tt-row";
+    tsRow.textContent = new Date(ts * 1000).toLocaleString();
+    const logRow = document.createElement("div");
+    logRow.className = "tt-row";
+    const sw = document.createElement("span");
+    sw.className = "tt-swatch";
+    sw.style.background = s.stroke;
+    const logText = document.createElement("span");
+    logText.textContent = logLabel(s._path);
+    logRow.append(sw, logText);
+    const epRow = document.createElement("div");
+    epRow.className = "tt-row";
+    epRow.textContent = `${s._endpoint}: ${formatUptime(uptime)}`;
+    tooltip.append(tsRow, logRow, epRow);
+    tooltip.style.display = "block";
+    const ttW = tooltip.offsetWidth;
+    const ttH = tooltip.offsetHeight;
+    const overW = u.over.clientWidth;
+    const overH = u.over.clientHeight;
+    let left = u.cursor.left + 14;
+    let top = u.cursor.top + 14;
+    if (left + ttW > overW) left = u.cursor.left - ttW - 14;
+    if (top + ttH > overH) top = u.cursor.top - ttH - 14;
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+  }
+
   plot = new uPlot(opts, data, chartDiv);
   populateSidebarSwatches();
+}
+
+function formatUptime(up) {
+  if (up >= 100) return "100%";
+  return parseFloat(up.toPrecision(8)) + "%";
 }
 
 function populateSidebarSwatches() {
