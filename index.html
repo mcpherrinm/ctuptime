@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CT Uptime</title>
+<link rel="stylesheet" href="dist/uPlot.min.css">
+<script src="dist/uPlot.iife.min.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 1em; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 1em; }
+  .bar h1 { margin: 0; font-size: 1.2em; white-space: nowrap; }
+  .bar label { display: flex; align-items: center; gap: 0.4em; font-size: 0.9em; }
+  #errors { color: #b00; white-space: pre-wrap; margin-bottom: 1em; }
+  #errors:empty { display: none; }
+  #chart { width: 100%; }
+
+  #logs-button { anchor-name: --logs-anchor; padding: 0.3em 0.6em; cursor: pointer; font: inherit; }
+  #logs-popover {
+    position-anchor: --logs-anchor;
+    margin: 0;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 0.5em;
+    width: 32em;
+    max-width: 90vw;
+    max-height: 70vh;
+    overflow: hidden;
+    gap: 0.4em;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  #logs-popover:popover-open { display: flex; flex-direction: column; }
+  #logs-filter { padding: 0.3em; font: inherit; }
+  #logs-list { overflow-y: auto; }
+  .log-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; }
+  .log-row input { margin-right: 0.4em; vertical-align: middle; }
+  .logs-actions { display: flex; gap: 0.5em; }
+  .logs-actions button { font: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1>🪵⏰ CT Uptime</h1>
+  <button id="logs-button" popovertarget="logs-popover" type="button">Logs (0)</button>
+  <div id="logs-popover" popover>
+    <input id="logs-filter" type="search" placeholder="Filter logs…" aria-label="Filter logs">
+    <div class="logs-actions">
+      <button type="button" id="logs-all">All visible</button>
+      <button type="button" id="logs-none">None visible</button>
+      <button type="button" id="logs-clear">Clear all</button>
+    </div>
+    <div id="logs-list"></div>
+  </div>
+  <label>From <input id="from" type="datetime-local"></label>
+  <label>To <input id="to" type="datetime-local"></label>
+</div>
+<div id="errors"></div>
+<div id="chart"></div>
+
+<script>
+const logsButton = document.getElementById("logs-button");
+const logsList = document.getElementById("logs-list");
+const logsFilter = document.getElementById("logs-filter");
+const fromInp = document.getElementById("from");
+const toInp = document.getElementById("to");
+const chartDiv = document.getElementById("chart");
+const errorsDiv = document.getElementById("errors");
+
+let allLogPaths = [];
+const selectedLogs = new Set();
+
+function updateLogsButton() {
+  logsButton.textContent = `Logs (${selectedLogs.size})`;
+}
+
+function renderLogsList() {
+  const q = logsFilter.value.trim().toLowerCase();
+  logsList.innerHTML = "";
+  for (const p of allLogPaths) {
+    const lbl = logLabel(p);
+    if (q && !lbl.toLowerCase().includes(q)) continue;
+    const row = document.createElement("label");
+    row.className = "log-row";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = selectedLogs.has(p);
+    cb.addEventListener("change", () => {
+      if (cb.checked) selectedLogs.add(p);
+      else selectedLogs.delete(p);
+      updateLogsButton();
+      render();
+    });
+    row.append(cb, document.createTextNode(lbl));
+    logsList.appendChild(row);
+  }
+}
+
+function visiblePaths() {
+  const q = logsFilter.value.trim().toLowerCase();
+  return allLogPaths.filter(p => !q || logLabel(p).toLowerCase().includes(q));
+}
+
+const cache = new Map();
+let plot = null;
+
+function clearErrors() { errorsDiv.textContent = ""; }
+function showError(msg) {
+  errorsDiv.textContent += (errorsDiv.textContent ? "\n" : "") + msg;
+}
+window.addEventListener("error", e => showError("JS error: " + e.message));
+window.addEventListener("unhandledrejection", e => showError("Unhandled: " + (e.reason && e.reason.message || e.reason)));
+
+function logLabel(path) {
+  // path like "data/https:%2F%2Fhost%2Fpath%2F.csv"
+  const file = path.replace(/^data\//, "").replace(/\.csv$/, "");
+  return decodeURIComponent(file);
+}
+
+async function fetchCsv(path) {
+  if (cache.has(path)) return cache.get(path);
+  // Filenames on disk contain literal "%2F" etc.; double-encode the "%" so
+  // servers that decode the request path once still find the file.
+  const url = path.replace(/%/g, "%25");
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    throw new Error(`${resp.status} ${resp.statusText} for ${url}`);
+  }
+  const text = await resp.text();
+  const lines = text.trim().split("\n");
+  const header = lines[0].split(",");
+  const rows = lines.slice(1).map(line => line.split(",").map((v, i) => i === 0 ? Number(v) : (v === "" ? null : Number(v))));
+  const parsed = { header, rows };
+  cache.set(path, parsed);
+  return parsed;
+}
+
+function toLocalInput(unix) {
+  const d = new Date(unix * 1000);
+  const pad = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function inputToUnix(s) {
+  if (!s) return null;
+  return Math.floor(new Date(s).getTime() / 1000);
+}
+
+async function render() {
+  clearErrors();
+  const selected = Array.from(selectedLogs);
+  if (plot) { plot.destroy(); plot = null; }
+  chartDiv.innerHTML = "";
+  if (selected.length === 0) return;
+
+  const results = await Promise.all(selected.map(p =>
+    fetchCsv(p).then(d => ({ path: p, data: d }), err => ({ path: p, err }))
+  ));
+  for (const r of results) {
+    if (r.err) showError(`Loading ${logLabel(r.path)}: ${r.err.message}`);
+  }
+  const ok = results.filter(r => r.data);
+  if (ok.length === 0) return;
+  const datasets = ok.map(r => r.data);
+  const okPaths = ok.map(r => r.path);
+
+  // Build a union of timestamps across all selected datasets.
+  const tsSet = new Set();
+  for (const d of datasets) {
+    for (const r of d.rows) tsSet.add(r[0]);
+  }
+  let timestamps = Array.from(tsSet).sort((a, b) => a - b);
+
+  const from = inputToUnix(fromInp.value);
+  const to = inputToUnix(toInp.value);
+  timestamps = timestamps.filter(t => (from == null || t >= from) && (to == null || t <= to));
+  if (timestamps.length === 0) return;
+
+  const xMin = from != null ? from : timestamps[0];
+  const xMax = to != null ? to : timestamps[timestamps.length - 1];
+
+  const tsIndex = new Map(timestamps.map((t, i) => [t, i]));
+
+  const series = [{}]; // x-axis placeholder
+  const data = [timestamps];
+
+  // Plot positions on the log-downtime axis:
+  //   true 100% uptime  -> 0.0001 (a dedicated "100%" gridline above the decades)
+  //   anything else     -> max(0.001, 100 - uptime), so 99.9...% values stay at
+  //                        or below the "99.999%" gridline and never collide
+  //                        visually with true 100%.
+  const TOP_100 = 0.0001;
+  const NINES_FLOOR = 0.001;
+
+  for (let di = 0; di < datasets.length; di++) {
+    const d = datasets[di];
+    const label = logLabel(okPaths[di]);
+    const rowByTs = new Map(d.rows.map(r => [r[0], r]));
+    for (let ci = 1; ci < d.header.length; ci++) {
+      const endpoint = d.header[ci];
+      const ys = new Array(timestamps.length).fill(null);
+      const uptimes = new Array(timestamps.length).fill(null);
+      for (const t of timestamps) {
+        const r = rowByTs.get(t);
+        if (r) {
+          const uptime = r[ci];
+          if (uptime != null) {
+            uptimes[tsIndex.get(t)] = uptime;
+            ys[tsIndex.get(t)] = uptime >= 100 ? TOP_100 : Math.max(NINES_FLOOR, 100 - uptime);
+          }
+        }
+      }
+      series.push({
+        label: `${label} ${endpoint}`,
+        stroke: colorFor(di, ci),
+        spanGaps: true,
+        value: (u, v, sidx, didx) => {
+          const up = didx == null ? null : uptimes[didx];
+          if (up == null) return "";
+          if (up >= 100) return "100%";
+          return parseFloat(up.toPrecision(8)) + "%";
+        },
+      });
+      data.push(ys);
+    }
+  }
+
+  const opts = {
+    width: chartDiv.clientWidth || 900,
+    height: 500,
+    series,
+    scales: {
+      x: { time: true, range: [xMin, xMax] },
+      y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
+    },
+    axes: [{}, {
+      label: "Uptime",
+      splits: () => [0.0001, 0.001, 0.01, 0.1, 1, 10, 100],
+      values: (u, splits) => splits.map(t => {
+        if (t <= 0.0001) return "100%";
+        const up = 100 - t;
+        if (up <= 0) return "0%";
+        return parseFloat(up.toPrecision(6)) + "%";
+      }),
+    }],
+  };
+  plot = new uPlot(opts, data, chartDiv);
+}
+
+function colorFor(logIdx, endpointIdx) {
+  // distinct-ish colors via HSL
+  const hue = (logIdx * 67 + endpointIdx * 23) % 360;
+  return `hsl(${hue}, 70%, 45%)`;
+}
+
+async function init() {
+  const resp = await fetch("index.json");
+  if (!resp.ok) {
+    showError(`Loading index.json: ${resp.status} ${resp.statusText}`);
+    return;
+  }
+  const idx = await resp.json();
+  allLogPaths = Object.keys(idx).sort();
+  renderLogsList();
+  updateLogsButton();
+
+  const now = Math.floor(Date.now() / 1000);
+  fromInp.value = toLocalInput(now - 7 * 86400);
+  toInp.value = toLocalInput(now);
+
+  logsFilter.addEventListener("input", renderLogsList);
+  document.getElementById("logs-all").addEventListener("click", () => {
+    for (const p of visiblePaths()) selectedLogs.add(p);
+    renderLogsList();
+    updateLogsButton();
+    render();
+  });
+  document.getElementById("logs-none").addEventListener("click", () => {
+    for (const p of visiblePaths()) selectedLogs.delete(p);
+    renderLogsList();
+    updateLogsButton();
+    render();
+  });
+  document.getElementById("logs-clear").addEventListener("click", () => {
+    selectedLogs.clear();
+    renderLogsList();
+    updateLogsButton();
+    render();
+  });
+  fromInp.addEventListener("change", render);
+  toInp.addEventListener("change", render);
+  window.addEventListener("resize", render);
+}
+
+init();
+</script>
+</body>
+</html>
