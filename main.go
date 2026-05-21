@@ -1,8 +1,10 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -10,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -178,6 +181,33 @@ func write(log string, points []point, t time.Time) error {
 	return w.Error()
 }
 
+func writeIndex(data map[string][]point, t time.Time) error {
+	f, err := os.OpenFile("index.json", os.O_RDWR, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	idx := make(map[string]int64)
+	if err := json.NewDecoder(f).Decode(&idx); err != nil {
+		return err
+	}
+
+	for log := range data {
+		idx[filepath.Join("data", url.PathEscape(log)+".csv")] = t.Unix()
+	}
+
+	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+	if err := f.Truncate(0); err != nil {
+		return err
+	}
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return enc.Encode(idx)
+}
+
 func writeMetrics(data map[string][]point, t time.Time) error {
 	f, err := os.Create("metrics")
 	if err != nil {
@@ -191,7 +221,16 @@ ct_uptime_timestamp %d
 # HELP ct_uptime CT log endpoint uptime over the past 24 hours.
 # TYPE ct_uptime gauge
 `, t.Unix())
-	for log, points := range data {
+	logs := make([]string, 0, len(data))
+	for log := range data {
+		logs = append(logs, log)
+	}
+	slices.Sort(logs)
+	for _, log := range logs {
+		points := slices.Clone(data[log])
+		slices.SortFunc(points, func(a, b point) int {
+			return cmp.Compare(a.endpoint, b.endpoint)
+		})
 		for _, p := range points {
 			fmt.Fprintf(f, "ct_uptime{log=%q,endpoint=%q} %s\n", log, p.endpoint, p.uptime)
 		}
@@ -219,6 +258,10 @@ func main() {
 			slog.Error("failed writing", slog.String("error", err.Error()))
 			failed = true
 		}
+	}
+	if err := writeIndex(data, lastMod); err != nil {
+		slog.Error("failed writing index", slog.String("error", err.Error()))
+		failed = true
 	}
 	if err := writeMetrics(data, lastMod); err != nil {
 		slog.Error("failed writing metrics", slog.String("error", err.Error()))
