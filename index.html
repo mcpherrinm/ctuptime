@@ -351,7 +351,17 @@ async function render() {
       x: { time: true, range: [xMin, xMax] },
       y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
     },
-    axes: [{}, {
+    axes: [{
+      values: [
+        // [tick incr (s), default,       year,                            month, day,                          hour, min,              sec, mode]
+        [3600 * 24 * 365,  "{YYYY}",      null,                            null,  null,                         null, null,             null, 1],
+        [3600 * 24 * 28,   "{MMM}",       "\n{YYYY}",                      null,  null,                         null, null,             null, 1],
+        [3600 * 24,        "{YYYY}-{MM}-{DD}", null,                       null,  null,                         null, null,             null, 1],
+        [3600,             "{h}{aa}",     "\n{YYYY}-{MM}-{DD}",            null,  "\n{YYYY}-{MM}-{DD}",         null, null,             null, 1],
+        [60,               "{h}:{mm}{aa}","\n{YYYY}-{MM}-{DD}",            null,  "\n{YYYY}-{MM}-{DD}",         null, null,             null, 1],
+        [1,                ":{ss}",       "\n{YYYY}-{MM}-{DD} {h}{aa}",    null,  "\n{YYYY}-{MM}-{DD} {h}{aa}", null, "\n{h}:{mm}{aa}", null, 1],
+      ],
+    }, {
       size: 70,
       splits: () => [0.0001, 0.001, 0.01, 0.1, 1, 10, 100],
       values: (u, splits) => splits.map(t => {
