@@ -36,7 +36,12 @@
   #logs-popover:popover-open { display: flex; flex-direction: column; }
   #logs-filter { padding: 0.3em; font: inherit; }
   #logs-list { overflow-y: auto; }
-  .log-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; }
+  #logs-list ul { list-style: none; margin: 0; padding: 0; }
+  #logs-list > ul > li + li { margin-top: 0.2em; }
+  .op-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; font-weight: 600; }
+  .op-row input { margin-right: 0.4em; vertical-align: middle; }
+  .op-children { padding-left: 1.4em; }
+  .log-row { display: block; padding: 0.1em 0; cursor: pointer; font-size: 0.9em; }
   .log-row input { margin-right: 0.4em; vertical-align: middle; }
   .logs-actions { display: flex; gap: 0.5em; }
   .logs-actions button { font: inherit; cursor: pointer; }
@@ -84,32 +89,81 @@ function updateLogsButton() {
   logsButton.textContent = `Logs (${selectedLogs.size})`;
 }
 
+function groupByOperator(paths) {
+  const groups = new Map();
+  for (const p of paths) {
+    const op = operatorFor(p);
+    if (!groups.has(op)) groups.set(op, []);
+    groups.get(op).push(p);
+  }
+  return new Map(
+    Array.from(groups.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([op, ps]) => [op, ps.sort((a, b) => logLabel(a).localeCompare(logLabel(b)))])
+  );
+}
+
 function renderLogsList() {
-  const q = logsFilter.value.trim().toLowerCase();
+  const visible = visiblePaths();
+  const groups = groupByOperator(visible);
   logsList.innerHTML = "";
-  for (const p of allLogPaths) {
-    const lbl = logLabel(p);
-    if (q && !lbl.toLowerCase().includes(q)) continue;
-    const row = document.createElement("label");
-    row.className = "log-row";
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = selectedLogs.has(p);
-    cb.addEventListener("change", () => {
-      if (cb.checked) selectedLogs.add(p);
-      else selectedLogs.delete(p);
+  const ul = document.createElement("ul");
+  for (const [op, paths] of groups) {
+    const li = document.createElement("li");
+    const opLabel = document.createElement("label");
+    opLabel.className = "op-row";
+    const opCb = document.createElement("input");
+    opCb.type = "checkbox";
+    const selCount = paths.filter(p => selectedLogs.has(p)).length;
+    opCb.checked = selCount === paths.length;
+    opCb.indeterminate = selCount > 0 && selCount < paths.length;
+    opCb.addEventListener("change", () => {
+      const turnOn = opCb.checked;
+      for (const p of paths) {
+        if (turnOn) selectedLogs.add(p);
+        else selectedLogs.delete(p);
+      }
       saveSelectedLogs();
+      renderLogsList();
       updateLogsButton();
       render();
     });
-    row.append(cb, document.createTextNode(lbl));
-    logsList.appendChild(row);
+    opLabel.append(opCb, document.createTextNode(`${op} (${paths.length})`));
+    li.appendChild(opLabel);
+
+    const childUl = document.createElement("ul");
+    childUl.className = "op-children";
+    for (const p of paths) {
+      const childLi = document.createElement("li");
+      const row = document.createElement("label");
+      row.className = "log-row";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = selectedLogs.has(p);
+      cb.addEventListener("change", () => {
+        if (cb.checked) selectedLogs.add(p);
+        else selectedLogs.delete(p);
+        saveSelectedLogs();
+        renderLogsList();
+        updateLogsButton();
+        render();
+      });
+      row.append(cb, document.createTextNode(logLabel(p)));
+      childLi.appendChild(row);
+      childUl.appendChild(childLi);
+    }
+    li.appendChild(childUl);
+    ul.appendChild(li);
   }
+  logsList.appendChild(ul);
 }
 
 function visiblePaths() {
   const q = logsFilter.value.trim().toLowerCase();
-  return allLogPaths.filter(p => !q || logLabel(p).toLowerCase().includes(q));
+  if (!q) return allLogPaths.slice();
+  return allLogPaths.filter(p =>
+    logLabel(p).toLowerCase().includes(q) || operatorFor(p).toLowerCase().includes(q)
+  );
 }
 
 const cache = new Map();
@@ -126,6 +180,17 @@ function logLabel(path) {
   // path like "data/https:%2F%2Fhost%2Fpath%2F.csv"
   const file = path.replace(/^data\//, "").replace(/\.csv$/, "");
   return decodeURIComponent(file);
+}
+
+function operatorFor(path) {
+  try {
+    const u = new URL(logLabel(path));
+    const parts = u.hostname.split(".");
+    if (parts.length < 2) return u.hostname;
+    return parts.slice(-2).join(".");
+  } catch {
+    return "(unknown)";
+  }
 }
 
 async function fetchCsv(path) {
