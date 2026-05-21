@@ -6,52 +6,62 @@
 <link rel="stylesheet" href="dist/uPlot.min.css">
 <script src="dist/uPlot.iife.min.js"></script>
 <style>
-  body { font-family: sans-serif; margin: 1em; }
-  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 1em; }
-  .bar h1 { margin: 0; font-size: 1.2em; white-space: nowrap; }
-  .bar label { display: flex; align-items: center; gap: 0.4em; font-size: 0.9em; }
-  #errors { color: #b00; white-space: pre-wrap; margin-bottom: 1em; }
-  #errors:empty { display: none; }
-  #chart { width: 100%; }
-
-  #logs-button { anchor-name: --logs-anchor; padding: 0.3em 0.6em; cursor: pointer; font: inherit; }
-  #logs-popover {
-    position-anchor: --logs-anchor;
+  html, body { height: 100%; }
+  body {
+    font-family: sans-serif;
     margin: 0;
-    inset: auto;
-    top: anchor(bottom);
-    left: anchor(left);
-    background: Canvas;
-    color: CanvasText;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    padding: 0.5em;
-    width: 32em;
-    max-width: 90vw;
-    max-height: 70vh;
-    overflow: hidden;
-    gap: 0.4em;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 1em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
-  #logs-popover:popover-open { display: flex; flex-direction: column; }
+  #errors { color: #b00; white-space: pre-wrap; margin-bottom: 0.5em; }
+  #errors:empty { display: none; }
+
+  .main-row {
+    display: flex;
+    gap: 1em;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+  }
+  #sidebar {
+    flex: 0 0 24em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    min-height: 0;
+  }
+  #sidebar h1 { margin: 0; font-size: 1.2em; white-space: nowrap; }
+  #sidebar h2 { font-size: 0.95em; margin: 0.4em 0 0; }
+  #sidebar > label { display: flex; align-items: center; gap: 0.4em; font-size: 0.9em; }
+  #sidebar > label > span { display: inline-block; width: 3em; }
+  #sidebar > label > input { flex: 1; min-width: 0; }
+  #main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+  #chart { flex: 1; min-height: 0; width: 100%; }
+
   #logs-filter { padding: 0.3em; font: inherit; }
-  #logs-list { overflow-y: auto; }
+  #logs-list { overflow-y: auto; flex: 1; min-height: 0; }
   #logs-list ul { list-style: none; margin: 0; padding: 0; }
   #logs-list > ul > li + li { margin-top: 0.2em; }
   .op-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; font-weight: 600; }
   .op-row input { margin-right: 0.4em; vertical-align: middle; }
   .op-children { padding-left: 1.4em; }
-  .log-row { display: block; padding: 0.1em 0; cursor: pointer; font-size: 0.9em; }
-  .log-row input { margin-right: 0.4em; vertical-align: middle; }
+  .log-row { display: flex; align-items: center; gap: 0.4em; padding: 0.1em 0; cursor: pointer; font-size: 0.9em; }
+  .log-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .swatches { display: inline-flex; gap: 2px; flex-wrap: wrap; max-width: 6em; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; }
   .logs-actions { display: flex; gap: 0.5em; }
   .logs-actions button { font: inherit; cursor: pointer; }
 </style>
 </head>
 <body>
-<div class="bar">
-  <h1>🪵⏰ CT Uptime</h1>
-  <button id="logs-button" popovertarget="logs-popover" type="button">Logs (0)</button>
-  <div id="logs-popover" popover>
+<div class="main-row">
+  <aside id="sidebar">
+    <h1>🪵⏰ CT Uptime</h1>
+    <label><span>From</span> <input id="from" type="datetime-local"></label>
+    <label><span>To</span> <input id="to" type="datetime-local"></label>
+    <h2 id="logs-heading">Logs (0)</h2>
     <input id="logs-filter" type="search" placeholder="Filter logs…" aria-label="Filter logs">
     <div class="logs-actions">
       <button type="button" id="logs-all">All visible</button>
@@ -59,15 +69,15 @@
       <button type="button" id="logs-clear">Clear all</button>
     </div>
     <div id="logs-list"></div>
+  </aside>
+  <div id="main">
+    <div id="errors"></div>
+    <div id="chart"></div>
   </div>
-  <label>From <input id="from" type="datetime-local"></label>
-  <label>To <input id="to" type="datetime-local"></label>
 </div>
-<div id="errors"></div>
-<div id="chart"></div>
 
 <script>
-const logsButton = document.getElementById("logs-button");
+const logsHeading = document.getElementById("logs-heading");
 const logsList = document.getElementById("logs-list");
 const logsFilter = document.getElementById("logs-filter");
 const fromInp = document.getElementById("from");
@@ -85,8 +95,8 @@ function saveSelectedLogs() {
   } catch {}
 }
 
-function updateLogsButton() {
-  logsButton.textContent = `Logs (${selectedLogs.size})`;
+function updateLogsHeading() {
+  logsHeading.textContent = `Logs (${selectedLogs.size})`;
 }
 
 function groupByOperator(paths) {
@@ -125,7 +135,7 @@ function renderLogsList() {
       }
       saveSelectedLogs();
       renderLogsList();
-      updateLogsButton();
+      updateLogsHeading();
       render();
     });
     opLabel.append(opCb, document.createTextNode(`${op} (${paths.length})`));
@@ -145,10 +155,16 @@ function renderLogsList() {
         else selectedLogs.delete(p);
         saveSelectedLogs();
         renderLogsList();
-        updateLogsButton();
+        updateLogsHeading();
         render();
       });
-      row.append(cb, document.createTextNode(logLabel(p)));
+      row.dataset.path = p;
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "label";
+      labelSpan.textContent = logLabel(p);
+      const swatches = document.createElement("span");
+      swatches.className = "swatches";
+      row.append(cb, labelSpan, swatches);
       childLi.appendChild(row);
       childUl.appendChild(childLi);
     }
@@ -156,6 +172,7 @@ function renderLogsList() {
     ul.appendChild(li);
   }
   logsList.appendChild(ul);
+  populateSidebarSwatches();
 }
 
 function visiblePaths() {
@@ -227,6 +244,7 @@ async function render() {
   const selected = Array.from(selectedLogs);
   if (plot) { plot.destroy(); plot = null; }
   chartDiv.innerHTML = "";
+  populateSidebarSwatches();
   if (selected.length === 0) return;
 
   const results = await Promise.all(selected.map(p =>
@@ -237,6 +255,10 @@ async function render() {
   }
   const ok = results.filter(r => r.data);
   if (ok.length === 0) return;
+  ok.sort((a, b) => {
+    const opCmp = operatorFor(a.path).localeCompare(operatorFor(b.path));
+    return opCmp !== 0 ? opCmp : logLabel(a.path).localeCompare(logLabel(b.path));
+  });
   const datasets = ok.map(r => r.data);
   const okPaths = ok.map(r => r.path);
 
@@ -259,7 +281,6 @@ async function render() {
 
   const series = [{}]; // x-axis placeholder
   const data = [timestamps];
-
   // Plot positions on the log-downtime axis:
   //   true 100% uptime  -> 0.0001 (a dedicated "100%" gridline above the decades)
   //   anything else     -> max(0.001, 100 - uptime), so 99.9...% values stay at
@@ -290,6 +311,7 @@ async function render() {
         label: `${label} ${endpoint}`,
         stroke: colorFor(di, ci),
         spanGaps: true,
+        _path: okPaths[di],
         value: (u, v, sidx, didx) => {
           const up = didx == null ? null : uptimes[didx];
           if (up == null) return "";
@@ -303,14 +325,14 @@ async function render() {
 
   const opts = {
     width: chartDiv.clientWidth || 900,
-    height: 500,
+    height: chartDiv.clientHeight || 500,
     series,
+    legend: { show: false },
     scales: {
       x: { time: true, range: [xMin, xMax] },
       y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
     },
     axes: [{}, {
-      label: "Uptime",
       splits: () => [0.0001, 0.001, 0.01, 0.1, 1, 10, 100],
       values: (u, splits) => splits.map(t => {
         if (t <= 0.0001) return "100%";
@@ -321,6 +343,29 @@ async function render() {
     }],
   };
   plot = new uPlot(opts, data, chartDiv);
+  populateSidebarSwatches();
+}
+
+function populateSidebarSwatches() {
+  logsList.querySelectorAll(".swatches").forEach(el => { el.innerHTML = ""; });
+  if (!plot) return;
+  const byPath = new Map();
+  for (let i = 1; i < plot.series.length; i++) {
+    const s = plot.series[i];
+    if (!s._path) continue;
+    if (!byPath.has(s._path)) byPath.set(s._path, []);
+    byPath.get(s._path).push(s.stroke);
+  }
+  for (const [path, colors] of byPath) {
+    const row = logsList.querySelector(`.log-row[data-path="${CSS.escape(path)}"] .swatches`);
+    if (!row) continue;
+    for (const c of colors) {
+      const sw = document.createElement("span");
+      sw.className = "swatch";
+      sw.style.background = c;
+      row.appendChild(sw);
+    }
+  }
 }
 
 function colorFor(logIdx, endpointIdx) {
@@ -351,7 +396,7 @@ async function init() {
     saveSelectedLogs();
   }
   renderLogsList();
-  updateLogsButton();
+  updateLogsHeading();
   render();
 
   const now = Math.floor(Date.now() / 1000);
@@ -363,21 +408,21 @@ async function init() {
     for (const p of visiblePaths()) selectedLogs.add(p);
     saveSelectedLogs();
     renderLogsList();
-    updateLogsButton();
+    updateLogsHeading();
     render();
   });
   document.getElementById("logs-none").addEventListener("click", () => {
     for (const p of visiblePaths()) selectedLogs.delete(p);
     saveSelectedLogs();
     renderLogsList();
-    updateLogsButton();
+    updateLogsHeading();
     render();
   });
   document.getElementById("logs-clear").addEventListener("click", () => {
     selectedLogs.clear();
     saveSelectedLogs();
     renderLogsList();
-    updateLogsButton();
+    updateLogsHeading();
     render();
   });
   fromInp.addEventListener("change", render);
