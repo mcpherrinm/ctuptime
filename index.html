@@ -72,6 +72,13 @@ const errorsDiv = document.getElementById("errors");
 
 let allLogPaths = [];
 const selectedLogs = new Set();
+const SELECTED_LOGS_KEY = "ctuptime.selectedLogs";
+
+function saveSelectedLogs() {
+  try {
+    localStorage.setItem(SELECTED_LOGS_KEY, JSON.stringify(Array.from(selectedLogs)));
+  } catch {}
+}
 
 function updateLogsButton() {
   logsButton.textContent = `Logs (${selectedLogs.size})`;
@@ -91,6 +98,7 @@ function renderLogsList() {
     cb.addEventListener("change", () => {
       if (cb.checked) selectedLogs.add(p);
       else selectedLogs.delete(p);
+      saveSelectedLogs();
       updateLogsButton();
       render();
     });
@@ -264,8 +272,22 @@ async function init() {
   }
   const idx = await resp.json();
   allLogPaths = Object.keys(idx).sort();
+
+  let stored = null;
+  try {
+    const raw = localStorage.getItem(SELECTED_LOGS_KEY);
+    if (raw != null) stored = JSON.parse(raw);
+  } catch {}
+  if (Array.isArray(stored)) {
+    const known = new Set(allLogPaths);
+    for (const p of stored) if (known.has(p)) selectedLogs.add(p);
+  } else {
+    for (const p of allLogPaths) selectedLogs.add(p);
+    saveSelectedLogs();
+  }
   renderLogsList();
   updateLogsButton();
+  render();
 
   const now = Math.floor(Date.now() / 1000);
   fromInp.value = toLocalInput(now - 7 * 86400);
@@ -274,18 +296,21 @@ async function init() {
   logsFilter.addEventListener("input", renderLogsList);
   document.getElementById("logs-all").addEventListener("click", () => {
     for (const p of visiblePaths()) selectedLogs.add(p);
+    saveSelectedLogs();
     renderLogsList();
     updateLogsButton();
     render();
   });
   document.getElementById("logs-none").addEventListener("click", () => {
     for (const p of visiblePaths()) selectedLogs.delete(p);
+    saveSelectedLogs();
     renderLogsList();
     updateLogsButton();
     render();
   });
   document.getElementById("logs-clear").addEventListener("click", () => {
     selectedLogs.clear();
+    saveSelectedLogs();
     renderLogsList();
     updateLogsButton();
     render();
