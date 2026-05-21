@@ -352,6 +352,7 @@ async function render() {
       y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
     },
     axes: [{}, {
+      size: 70,
       splits: () => [0.0001, 0.001, 0.01, 0.1, 1, 10, 100],
       values: (u, splits) => splits.map(t => {
         if (t <= 0.0001) return "100%";
