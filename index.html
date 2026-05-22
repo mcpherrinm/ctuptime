@@ -278,6 +278,13 @@ async function render() {
   const datasets = ok.map(r => r.data);
   const okPaths = ok.map(r => r.path);
 
+  const opCounts = new Map();
+  for (const p of okPaths) {
+    const op = operatorFor(p);
+    opCounts.set(op, (opCounts.get(op) || 0) + 1);
+  }
+  const opSeen = new Map();
+
   // Build a union of timestamps across all selected datasets.
   const tsSet = new Set();
   for (const d of datasets) {
@@ -307,8 +314,14 @@ async function render() {
 
   for (let di = 0; di < datasets.length; di++) {
     const d = datasets[di];
-    const label = logLabel(okPaths[di]);
+    const path = okPaths[di];
+    const op = operatorFor(path);
+    const idxInOp = opSeen.get(op) || 0;
+    opSeen.set(op, idxInOp + 1);
+    const opSize = opCounts.get(op);
+    const label = logLabel(path);
     const rowByTs = new Map(d.rows.map(r => [r[0], r]));
+    const color = colorFor(op, idxInOp, opSize);
     for (let ci = 1; ci < d.header.length; ci++) {
       const endpoint = d.header[ci];
       const ys = new Array(timestamps.length).fill(null);
@@ -325,11 +338,12 @@ async function render() {
       }
       series.push({
         label: `${label} ${endpoint}`,
-        stroke: colorFor(di, ci),
+        stroke: color,
         spanGaps: true,
-        _path: okPaths[di],
+        _path: path,
         _endpoint: endpoint,
         _uptimes: uptimes,
+        _color: color,
       });
       data.push(ys);
     }
@@ -419,7 +433,7 @@ async function render() {
     logRow.className = "tt-row";
     const sw = document.createElement("span");
     sw.className = "tt-swatch";
-    sw.style.background = s.stroke;
+    sw.style.background = s._color;
     const logText = document.createElement("span");
     logText.textContent = logLabel(s._path);
     logRow.append(sw, logText);
@@ -427,6 +441,7 @@ async function render() {
     epRow.className = "tt-row";
     epRow.textContent = `${s._endpoint}: ${formatUptime(uptime)}`;
     tooltip.append(tsRow, logRow, epRow);
+    tooltip.style.border = `2px solid ${s._color}`;
     tooltip.style.display = "block";
     const ttW = tooltip.offsetWidth;
     const ttH = tooltip.offsetHeight;
@@ -455,26 +470,31 @@ function populateSidebarSwatches() {
   const byPath = new Map();
   for (let i = 1; i < plot.series.length; i++) {
     const s = plot.series[i];
-    if (!s._path) continue;
-    if (!byPath.has(s._path)) byPath.set(s._path, []);
-    byPath.get(s._path).push(s.stroke);
+    if (!s._path || byPath.has(s._path)) continue;
+    byPath.set(s._path, s._color);
   }
-  for (const [path, colors] of byPath) {
+  for (const [path, color] of byPath) {
     const row = logsList.querySelector(`.log-row[data-path="${CSS.escape(path)}"] .swatches`);
     if (!row) continue;
-    for (const c of colors) {
-      const sw = document.createElement("span");
-      sw.className = "swatch";
-      sw.style.background = c;
-      row.appendChild(sw);
-    }
+    const sw = document.createElement("span");
+    sw.className = "swatch";
+    sw.style.background = color;
+    row.appendChild(sw);
   }
 }
 
-function colorFor(logIdx, endpointIdx) {
-  // distinct-ish colors via HSL
-  const hue = (logIdx * 67 + endpointIdx * 23) % 360;
-  return `hsl(${hue}, 70%, 45%)`;
+function hueForOperator(op) {
+  let h = 5381;
+  for (let i = 0; i < op.length; i++) h = ((h << 5) + h + op.charCodeAt(i)) >>> 0;
+  return h % 360;
+}
+
+function colorFor(op, logIdxInOp, opSize) {
+  const hue = hueForOperator(op);
+  const logT = opSize > 1 ? logIdxInOp / (opSize - 1) : 0.5;
+  const L = 0.45 + 0.28 * logT;
+  const C = 0.22 - 0.10 * logT;
+  return `oklch(${L.toFixed(3)} ${C.toFixed(3)} ${hue})`;
 }
 
 async function init() {
