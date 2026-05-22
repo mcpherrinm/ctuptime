@@ -31,7 +31,18 @@
     flex-direction: column;
     gap: 0.4em;
     min-height: 0;
+    min-width: 0;
+    overflow: hidden;
   }
+  #sidebar-resizer {
+    flex: 0 0 6px;
+    cursor: col-resize;
+    background: transparent;
+    border-left: 1px solid #ddd;
+    margin: 0 -2px;
+  }
+  #sidebar-resizer:hover, #sidebar-resizer.dragging { border-left-color: #888; }
+  body.resizing-sidebar { cursor: col-resize; user-select: none; }
   #sidebar h1 { margin: 0; font-size: 1.2em; white-space: nowrap; }
   #sidebar h2 { font-size: 0.95em; margin: 0.4em 0 0; }
   #sidebar > label { display: flex; align-items: center; gap: 0.4em; font-size: 0.9em; }
@@ -86,6 +97,7 @@
     </div>
     <div id="logs-list"></div>
   </aside>
+  <div id="sidebar-resizer"></div>
   <div id="main">
     <div id="errors"></div>
     <div id="chart"></div>
@@ -100,6 +112,41 @@ const fromInp = document.getElementById("from");
 const toInp = document.getElementById("to");
 const chartDiv = document.getElementById("chart");
 const errorsDiv = document.getElementById("errors");
+const sidebar = document.getElementById("sidebar");
+const sidebarResizer = document.getElementById("sidebar-resizer");
+const SIDEBAR_WIDTH_KEY = "ctuptime.sidebarWidth";
+const SIDEBAR_MIN = 180;
+const SIDEBAR_MAX_FRAC = 0.7;
+
+(function initSidebarResize() {
+  const stored = parseFloat(localStorage.getItem(SIDEBAR_WIDTH_KEY));
+  if (Number.isFinite(stored) && stored >= SIDEBAR_MIN) {
+    sidebar.style.flex = `0 0 ${stored}px`;
+  }
+  let dragging = false;
+  sidebarResizer.addEventListener("mousedown", e => {
+    dragging = true;
+    sidebarResizer.classList.add("dragging");
+    document.body.classList.add("resizing-sidebar");
+    e.preventDefault();
+  });
+  window.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const parentLeft = sidebar.parentElement.getBoundingClientRect().left;
+    const max = window.innerWidth * SIDEBAR_MAX_FRAC;
+    const w = Math.max(SIDEBAR_MIN, Math.min(max, e.clientX - parentLeft));
+    sidebar.style.flex = `0 0 ${w}px`;
+  });
+  window.addEventListener("mouseup", () => {
+    if (!dragging) return;
+    dragging = false;
+    sidebarResizer.classList.remove("dragging");
+    document.body.classList.remove("resizing-sidebar");
+    const w = sidebar.getBoundingClientRect().width;
+    try { localStorage.setItem(SIDEBAR_WIDTH_KEY, String(Math.round(w))); } catch {}
+    render();
+  });
+})();
 
 let allLogPaths = [];
 const selectedLogs = new Set();
