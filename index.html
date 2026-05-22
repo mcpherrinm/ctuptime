@@ -376,6 +376,20 @@ async function render() {
         u.over.appendChild(tooltip);
         u.over.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
       }],
+      drawAxes: [u => {
+        // 99% SLA target line (y=1 on the log-downtime axis).
+        const ctx = u.ctx;
+        const yPos = Math.round(u.valToPos(1, "y", true)) + 0.5;
+        ctx.save();
+        ctx.strokeStyle = "#c00";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([10, 8]);
+        ctx.beginPath();
+        ctx.moveTo(u.bbox.left, yPos);
+        ctx.lineTo(u.bbox.left + u.bbox.width, yPos);
+        ctx.stroke();
+        ctx.restore();
+      }],
       setSeries: [(u, sidx, o) => {
         if (o.focus !== undefined) {
           focusedIdx = o.focus ? sidx : (focusedIdx === sidx ? null : focusedIdx);
