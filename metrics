@@ -1,6 +1,6 @@
 # HELP ct_uptime_timestamp Unix timestamp of the last CT endpoint uptime data update.
 # TYPE ct_uptime_timestamp gauge
-ct_uptime_timestamp 1779506280
+ct_uptime_timestamp 1779515880
 # HELP ct_uptime CT log endpoint uptime over the past 24 hours.
 # TYPE ct_uptime gauge
 ct_uptime{log="https://arche2026h1.staging.ct.transparency.dev/",endpoint="add-chain"} 100.0000
@@ -90,24 +90,24 @@ ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-entries"}
 ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-sth-consistency"} 95.4545
+ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-sth-consistency"} 94.6970
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-sth-consistency"} 94.2446
+ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-sth-consistency"} 93.5714
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
-ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-roots"} 93.7500
+ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-roots"} 93.3333
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="add-pre-chain"} 100.0000
-ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-entries"} 100.0000
+ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-entries"} 99.2857
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-sth"} 100.0000
@@ -242,7 +242,7 @@ ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-entries"} 10
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2857
+ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2806
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
