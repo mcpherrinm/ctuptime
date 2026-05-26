@@ -351,13 +351,10 @@ async function render() {
 
   const series = [{}]; // x-axis placeholder
   const data = [timestamps];
-  // Plot positions on the log-downtime axis:
-  //   true 100% uptime  -> 0.0001 (a dedicated "100%" gridline above the decades)
-  //   anything else     -> max(0.001, 100 - uptime), so 99.9...% values stay at
-  //                        or below the "99.999%" gridline and never collide
-  //                        visually with true 100%.
-  const TOP_100 = 0.0001;
-  const NINES_FLOOR = 0.001;
+  // Plot positions on the log-downtime axis (range [0.01, 100], i.e. 99.99% .. 0%).
+  // 99% (downtime = 1) sits at the geometric center of the axis.
+  //   100% uptime, and anything >= 99.99%, clamps to the top gridline (0.01).
+  const AXIS_TOP = 0.01;
 
   for (let di = 0; di < datasets.length; di++) {
     const d = datasets[di];
@@ -379,7 +376,7 @@ async function render() {
           const uptime = r[ci];
           if (uptime != null) {
             uptimes[tsIndex.get(t)] = uptime;
-            ys[tsIndex.get(t)] = uptime >= 100 ? TOP_100 : Math.max(NINES_FLOOR, 100 - uptime);
+            ys[tsIndex.get(t)] = Math.max(AXIS_TOP, 100 - uptime);
           }
         }
       }
@@ -410,7 +407,7 @@ async function render() {
     },
     scales: {
       x: { time: true, range: [xMin, xMax] },
-      y: { distr: 3, log: 10, dir: -1, range: [0.0001, 100] },
+      y: { distr: 3, log: 10, dir: -1, range: [0.01, 100] },
     },
     axes: [{
       values: [
@@ -424,9 +421,8 @@ async function render() {
       ],
     }, {
       size: 70,
-      splits: () => [0.0001, 0.001, 0.01, 0.1, 1, 10, 100],
+      splits: () => [0.01, 0.1, 1, 10, 100],
       values: (u, splits) => splits.map(t => {
-        if (t <= 0.0001) return "100%";
         const up = 100 - t;
         if (up <= 0) return "0%";
         return parseFloat(up.toPrecision(6)) + "%";
