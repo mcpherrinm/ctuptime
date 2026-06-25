@@ -1,6 +1,6 @@
 # HELP ct_uptime_timestamp Unix timestamp of the last CT endpoint uptime data update.
 # TYPE ct_uptime_timestamp gauge
-ct_uptime_timestamp 1782375480
+ct_uptime_timestamp 1782383280
 # HELP ct_uptime CT log endpoint uptime over the past 24 hours.
 # TYPE ct_uptime gauge
 ct_uptime{log="https://arche2026h1.staging.ct.transparency.dev/",endpoint="add-chain"} 100.0000
@@ -44,14 +44,14 @@ ct_uptime{log="https://ct.cloudflare.com/logs/nimbus2027/",endpoint="get-sth"} 1
 ct_uptime{log="https://ct.cloudflare.com/logs/nimbus2027/",endpoint="get-sth-consistency"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="add-pre-chain"} 100.0000
-ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-entries"} 99.2806
+ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-entries"} 99.2857
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-sth"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h1/",endpoint="get-sth-consistency"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="add-pre-chain"} 100.0000
-ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="get-entries"} 99.2857
+ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="get-entries"} 99.2806
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2026h2/",endpoint="get-sth"} 100.0000
@@ -61,15 +61,15 @@ ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="add-pr
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-roots"} 100.0000
-ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-sth"} 99.2857
-ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-sth-consistency"} 98.5611
+ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-sth"} 100.0000
+ct_uptime{log="https://ct.googleapis.com/logs/eu1/xenon2027h1/",endpoint="get-sth-consistency"} 99.2857
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-sth-consistency"} 99.2806
+ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h1/",endpoint="get-sth-consistency"} 99.2857
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h2/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h2/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://ct.googleapis.com/logs/us1/argon2026h2/",endpoint="get-entries"} 100.0000
@@ -93,7 +93,7 @@ ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-sth"} 100
 ct_uptime{log="https://ct2026-a.trustasia.com/log2026a/",endpoint="get-sth-consistency"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="add-pre-chain"} 100.0000
-ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-entries"} 100.0000
+ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-entries"} 99.2806
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://ct2026-b.trustasia.com/log2026b/",endpoint="get-sth"} 100.0000
@@ -103,15 +103,15 @@ ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="add-pre-chain"}
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-roots"} 100.0000
-ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth"} 99.2806
-ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2806
+ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth"} 99.2857
+ct_uptime{log="https://elephant2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2857
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="add-chain"} 100.0000
-ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="add-pre-chain"} 91.6667
+ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="add-pre-chain"} 90.9091
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 97.8571
+ct_uptime{log="https://elephant2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 97.8417
 ct_uptime{log="https://elephant2027h1.ct.sectigo.com/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://elephant2027h1.ct.sectigo.com/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://elephant2027h1.ct.sectigo.com/",endpoint="get-entries"} 100.0000
@@ -125,7 +125,7 @@ ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-entries"} 1
 ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5714
+ct_uptime{log="https://elephant2027h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5611
 ct_uptime{log="https://gouda2026h1.log.ct.ipng.ch/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://gouda2026h1.log.ct.ipng.ch/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://gouda2026h1.log.ct.ipng.ch/",endpoint="checkpoint"} 100.0000
@@ -168,7 +168,7 @@ ct_uptime{log="https://halloumi2027h2.log.ct.ipng.ch/",endpoint="get-roots"} 100
 ct_uptime{log="https://halloumi2027h2.log.ct.ipng.ch/",endpoint="tile"} 100.0000
 ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="add-pre-chain"} 100.0000
-ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="get-entries"} 100.0000
+ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="get-entries"} 99.2806
 ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://hetu2027.trustasia.com/hetu2027/",endpoint="get-sth"} 100.0000
@@ -238,12 +238,12 @@ ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-entries"} 99
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5714
+ct_uptime{log="https://mammoth2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5611
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-entries"} 100.0000
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-sth"} 99.2806
-ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5714
+ct_uptime{log="https://mammoth2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 98.5611
 ct_uptime{log="https://parcelyard2025h2.prod.certificate.transparency.goog/",endpoint="checkpoint"} 100.0000
 ct_uptime{log="https://parcelyard2025h2.prod.certificate.transparency.goog/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://parcelyard2026h2.prod.certificate.transparency.goog/",endpoint="add-chain"} 100.0000
@@ -303,11 +303,11 @@ ct_uptime{log="https://sabre2026h1.ct.sectigo.com/",endpoint="get-proof-by-hash"
 ct_uptime{log="https://sabre2026h1.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://sabre2026h1.ct.sectigo.com/",endpoint="get-sth"} 100.0000
 ct_uptime{log="https://sabre2026h1.ct.sectigo.com/",endpoint="get-sth-consistency"} 100.0000
-ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-entries"} 99.2806
+ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-entries"} 99.2857
 ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-proof-by-hash"} 100.0000
 ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-roots"} 100.0000
 ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-sth"} 100.0000
-ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2806
+ct_uptime{log="https://sabre2026h2.ct.sectigo.com/",endpoint="get-sth-consistency"} 99.2857
 ct_uptime{log="https://sphinx.ct.digicert.com/2026h1/",endpoint="add-chain"} 100.0000
 ct_uptime{log="https://sphinx.ct.digicert.com/2026h1/",endpoint="add-pre-chain"} 100.0000
 ct_uptime{log="https://sphinx.ct.digicert.com/2026h1/",endpoint="get-entries"} 100.0000
