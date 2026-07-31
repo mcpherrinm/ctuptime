@@ -51,6 +51,10 @@
   #main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
   #chart { flex: 1; min-height: 0; width: 100%; }
 
+  .range-links { font-size: 0.85em; color: #555; }
+  .range-links a { color: #06c; cursor: pointer; text-decoration: none; }
+  .range-links a:hover { text-decoration: underline; }
+
   #logs-filter { padding: 0.3em; font: inherit; }
   #logs-list { overflow-y: auto; flex: 1; min-height: 0; }
   #logs-list ul { list-style: none; margin: 0; padding: 0; }
@@ -88,6 +92,12 @@
     <h1>🪵⏰ CT Uptime</h1>
     <label><span>From</span> <input id="from" type="datetime-local"></label>
     <label><span>To</span> <input id="to" type="datetime-local"></label>
+    <div class="range-links" id="range-links">
+      Last <a data-range="week">Week</a>,
+      <a data-range="month">Month</a>,
+      <a data-range="3months">3 Months</a>,
+      <a data-range="year">Year</a>
+    </div>
     <h2 id="logs-heading">Logs (0)</h2>
     <input id="logs-filter" type="search" placeholder="Filter logs…" aria-label="Filter logs">
     <div class="logs-actions">
@@ -300,6 +310,25 @@ function toLocalInput(unix) {
 function inputToUnix(s) {
   if (!s) return null;
   return Math.floor(new Date(s).getTime() / 1000);
+}
+
+// Each range mutates a Date in place, stepping it back from "now".
+const RANGES = {
+  week: d => d.setDate(d.getDate() - 7),
+  month: d => d.setMonth(d.getMonth() - 1),
+  "3months": d => d.setMonth(d.getMonth() - 3),
+  year: d => d.setFullYear(d.getFullYear() - 1),
+};
+
+// Sets To = now and From = now - range. Does not re-render.
+function setRange(name) {
+  const back = RANGES[name];
+  if (!back) return;
+  const now = new Date();
+  const start = new Date(now);
+  back(start);
+  fromInp.value = toLocalInput(start.getTime() / 1000);
+  toInp.value = toLocalInput(now.getTime() / 1000);
 }
 
 async function render() {
@@ -561,14 +590,17 @@ async function init() {
     for (const p of allLogPaths) selectedLogs.add(p);
     saveSelectedLogs();
   }
+  setRange("week");
   renderLogsList();
   updateLogsHeading();
   render();
 
-  const now = Math.floor(Date.now() / 1000);
-  fromInp.value = toLocalInput(now - 7 * 86400);
-  toInp.value = toLocalInput(now);
-
+  document.getElementById("range-links").addEventListener("click", e => {
+    const a = e.target.closest("a[data-range]");
+    if (!a) return;
+    setRange(a.dataset.range);
+    render();
+  });
   logsFilter.addEventListener("input", renderLogsList);
   document.getElementById("logs-all").addEventListener("click", () => {
     for (const p of visiblePaths()) selectedLogs.add(p);
