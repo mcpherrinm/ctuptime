@@ -55,19 +55,42 @@
   .range-links a { color: #06c; cursor: pointer; text-decoration: none; }
   .range-links a:hover { text-decoration: underline; }
 
-  #logs-filter { padding: 0.3em; font: inherit; }
   #logs-list { overflow-y: auto; flex: 1; min-height: 0; }
   #logs-list ul { list-style: none; margin: 0; padding: 0; }
   #logs-list > ul > li + li { margin-top: 0.2em; }
-  .op-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; font-weight: 600; }
-  .op-row input { margin-right: 0.4em; vertical-align: middle; }
-  .op-children { padding-left: 1.4em; }
   .logs-head { display: flex; align-items: baseline; gap: 0.6em; flex-wrap: wrap; }
   .logs-head label { display: flex; align-items: center; gap: 0.3em; font-size: 0.85em; cursor: pointer; }
-  .log-row { display: flex; align-items: center; gap: 0.4em; padding: 0.1em 0; cursor: pointer; font-size: 0.9em; }
-  /* Logs contributing nothing to the current view (out of range, or fully filtered). */
-  .op-row.no-data, .log-row.no-data .label { color: #aaa; }
-  .log-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* operator > log > endpoint tree */
+  .tree-row { display: flex; align-items: center; gap: 0.3em; padding: 0.1em 0; font-size: 0.9em; }
+  .tree-row > label { display: flex; align-items: center; gap: 0.4em; flex: 1; min-width: 0; cursor: pointer; }
+  .tree-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .op-row { font-weight: 600; }
+  .ep-row { font-size: 0.85em; color: #444; }
+  .tree-row .range {
+    flex: 0 0 auto;
+    margin-left: 0.4em;
+    font-size: 0.85em;
+    font-weight: normal;
+    color: #777;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Indent each level, with a guide line running under the parent's twisty.
+     Needs the #logs-list prefix to outrank "#logs-list ul { padding: 0 }". */
+  #logs-list .children {
+    margin-left: 0.6em;
+    padding-left: 1em;
+    border-left: 1px solid #e2e2e2;
+  }
+  .twisty {
+    flex: 0 0 1.2em; padding: 0; border: 0; background: none; font: inherit;
+    line-height: 1; color: #666; cursor: pointer;
+  }
+  .twisty[hidden] { visibility: hidden; display: block; }
+  .tree-note { padding-left: 1.5em; font-size: 0.85em; color: #888; }
+  /* Rows contributing nothing to the current view (out of range, or filtered out). */
+  .tree-row.no-data .label { color: #aaa; }
   .swatches { display: inline-flex; gap: 2px; flex-wrap: wrap; max-width: 6em; }
   .swatch { width: 10px; height: 10px; border-radius: 2px; }
   .chart-tooltip {
@@ -106,11 +129,9 @@
       <h2 id="logs-heading">Logs (0)</h2>
       <label><input type="checkbox" id="hide-high"> Hide data &gt; 99.99%</label>
     </div>
-    <input id="logs-filter" type="search" placeholder="Filter logs…" aria-label="Filter logs">
     <div class="logs-actions">
-      <button type="button" id="logs-all">All visible</button>
-      <button type="button" id="logs-none">None visible</button>
-      <button type="button" id="logs-clear">Clear all</button>
+      <button type="button" id="logs-all">Show all</button>
+      <button type="button" id="logs-none">Hide all</button>
     </div>
     <div id="logs-list"></div>
   </aside>
@@ -124,7 +145,6 @@
 <script>
 const logsHeading = document.getElementById("logs-heading");
 const logsList = document.getElementById("logs-list");
-const logsFilter = document.getElementById("logs-filter");
 const hideHighInp = document.getElementById("hide-high");
 const fromInp = document.getElementById("from");
 const toInp = document.getElementById("to");
@@ -167,16 +187,87 @@ const SIDEBAR_MAX_FRAC = 0.7;
 })();
 
 let allLogPaths = [];
+let operatorGroups = new Map();  // operator -> its paths, both in display order
+// A log is shown when it's in selectedLogs; individual endpoints of it can then
+// be switched off. An empty (or absent) hidden set means "all endpoints".
 const selectedLogs = new Set();
+const hiddenEndpoints = new Map();  // path -> Set of endpoint names
+// Which tree nodes are open. Everything starts collapsed.
+const expandedOps = new Set();
+const expandedLogs = new Set();
+const EMPTY = new Set();
 const SELECTED_LOGS_KEY = "ctuptime.selectedLogs";
+const HIDDEN_ENDPOINTS_KEY = "ctuptime.hiddenEndpoints";
 const HIDE_HIGH_KEY = "ctuptime.hideHigh";
 // Uptimes strictly above this are dropped when "Hide data > 99.99%" is on.
 const HIDE_ABOVE = 99.99;
 
-function saveSelectedLogs() {
+function saveSelection() {
   try {
     localStorage.setItem(SELECTED_LOGS_KEY, JSON.stringify(Array.from(selectedLogs)));
+    const hidden = {};
+    for (const [p, eps] of hiddenEndpoints) if (eps.size) hidden[p] = Array.from(eps);
+    localStorage.setItem(HIDDEN_ENDPOINTS_KEY, JSON.stringify(hidden));
   } catch {}
+}
+
+// Endpoint names come from the CSV header, so they're only known once fetched.
+function endpointsFor(path) {
+  const d = cache.get(path);
+  return d ? d.header.slice(1) : null;
+}
+
+function hiddenFor(path) { return hiddenEndpoints.get(path) || EMPTY; }
+
+function endpointOn(path, endpoint) {
+  return selectedLogs.has(path) && !hiddenFor(path).has(endpoint);
+}
+
+function logCheckState(path) {
+  if (!selectedLogs.has(path)) return "off";
+  return hiddenFor(path).size === 0 ? "on" : "partial";
+}
+
+function operatorCheckState(paths) {
+  let on = 0, partial = 0;
+  for (const p of paths) {
+    const state = logCheckState(p);
+    if (state === "on") on++;
+    else if (state === "partial") partial++;
+  }
+  if (on === paths.length) return "on";
+  if (on === 0 && partial === 0) return "off";
+  return "partial";
+}
+
+// Toggling a log always resets its endpoints, so re-checking it shows all of them.
+function setLogSelected(path, on) {
+  if (on) selectedLogs.add(path);
+  else selectedLogs.delete(path);
+  hiddenEndpoints.delete(path);
+}
+
+function setEndpointSelected(path, endpoint, on) {
+  const endpoints = endpointsFor(path) || [];
+  if (on && !selectedLogs.has(path)) {
+    // Ticking one endpoint of a hidden log shows that endpoint alone.
+    selectedLogs.add(path);
+    hiddenEndpoints.set(path, new Set(endpoints.filter(e => e !== endpoint)));
+    return;
+  }
+  const hidden = new Set(hiddenFor(path));
+  if (on) hidden.delete(endpoint);
+  else hidden.add(endpoint);
+  if (endpoints.length && hidden.size >= endpoints.length) setLogSelected(path, false);
+  else if (hidden.size) hiddenEndpoints.set(path, hidden);
+  else hiddenEndpoints.delete(path);
+}
+
+function selectionChanged() {
+  saveSelection();
+  renderLogsList();
+  updateLogsHeading();
+  render();
 }
 
 function updateLogsHeading() {
@@ -197,79 +288,155 @@ function groupByOperator(paths) {
   );
 }
 
+// One row of the tree: an expand twisty (or a blank in its place), a checkbox
+// that can be tri-state, and a label. opts.onToggle being absent means a leaf.
+function treeRow(className, opts) {
+  const row = document.createElement("div");
+  row.className = `tree-row ${className}`;
+  Object.assign(row.dataset, opts.dataset || {});
+
+  const twisty = document.createElement("button");
+  twisty.type = "button";
+  twisty.className = "twisty";
+  if (opts.onToggle) {
+    twisty.textContent = opts.expanded ? "▾" : "▸";
+    twisty.setAttribute("aria-expanded", String(!!opts.expanded));
+    twisty.setAttribute("aria-label", (opts.expanded ? "Collapse " : "Expand ") + opts.text);
+    twisty.addEventListener("click", opts.onToggle);
+  } else {
+    twisty.hidden = true;
+  }
+
+  const label = document.createElement("label");
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.checked = opts.state === "on";
+  cb.indeterminate = opts.state === "partial";
+  cb.addEventListener("change", () => opts.onCheck(cb.checked));
+  const text = document.createElement("span");
+  text.className = "label";
+  text.textContent = opts.text;
+  label.append(cb, text);
+
+  // Filled in by updateLogRowStates(), which also reacts to time range changes.
+  const range = document.createElement("span");
+  range.className = "range";
+
+  row.append(twisty, label, range);
+  if (opts.swatches) {
+    const swatches = document.createElement("span");
+    swatches.className = "swatches";
+    row.appendChild(swatches);
+  }
+  return row;
+}
+
+function toggleIn(set, key) {
+  if (!set.delete(key)) set.add(key);
+}
+
+// Expanding a log needs its endpoint names, i.e. its CSV header.
+async function toggleLogExpanded(path) {
+  toggleIn(expandedLogs, path);
+  if (expandedLogs.has(path) && !cache.has(path)) {
+    renderLogsList();
+    try {
+      await fetchCsv(path);
+    } catch (err) {
+      showError(`Loading ${logLabel(path)}: ${err.message}`);
+    }
+  }
+  renderLogsList();
+}
+
+function endpointNode(path, endpoint) {
+  const li = document.createElement("li");
+  li.appendChild(treeRow("ep-row", {
+    dataset: { path, endpoint },
+    state: endpointOn(path, endpoint) ? "on" : "off",
+    onCheck: on => { setEndpointSelected(path, endpoint, on); selectionChanged(); },
+    text: endpoint,
+  }));
+  return li;
+}
+
+function logNode(path) {
+  const li = document.createElement("li");
+  const expanded = expandedLogs.has(path);
+  li.appendChild(treeRow("log-row", {
+    dataset: { path },
+    expanded,
+    onToggle: () => toggleLogExpanded(path),
+    state: logCheckState(path),
+    onCheck: on => { setLogSelected(path, on); selectionChanged(); },
+    text: logLabel(path),
+    swatches: true,
+  }));
+  if (expanded) {
+    const ul = document.createElement("ul");
+    ul.className = "children";
+    const endpoints = endpointsFor(path);
+    if (endpoints) {
+      for (const ep of endpoints) ul.appendChild(endpointNode(path, ep));
+    } else {
+      const note = document.createElement("li");
+      note.className = "tree-note";
+      note.textContent = "loading endpoints…";
+      ul.appendChild(note);
+    }
+    li.appendChild(ul);
+  }
+  return li;
+}
+
+function operatorNode(op, paths) {
+  const li = document.createElement("li");
+  const expanded = expandedOps.has(op);
+  li.appendChild(treeRow("op-row", {
+    dataset: { op },
+    expanded,
+    onToggle: () => { toggleIn(expandedOps, op); renderLogsList(); },
+    state: operatorCheckState(paths),
+    onCheck: on => {
+      for (const p of paths) setLogSelected(p, on);
+      selectionChanged();
+    },
+    text: `${op} (${paths.length})`,
+  }));
+  if (expanded) {
+    const ul = document.createElement("ul");
+    ul.className = "children";
+    for (const p of paths) ul.appendChild(logNode(p));
+    li.appendChild(ul);
+  }
+  return li;
+}
+
 function renderLogsList() {
-  const visible = visiblePaths();
-  const groups = groupByOperator(visible);
   logsList.innerHTML = "";
   const ul = document.createElement("ul");
-  for (const [op, paths] of groups) {
-    const li = document.createElement("li");
-    const opLabel = document.createElement("label");
-    opLabel.className = "op-row";
-    const opCb = document.createElement("input");
-    opCb.type = "checkbox";
-    const selCount = paths.filter(p => selectedLogs.has(p)).length;
-    opCb.checked = selCount === paths.length;
-    opCb.indeterminate = selCount > 0 && selCount < paths.length;
-    opCb.addEventListener("change", () => {
-      const turnOn = opCb.checked;
-      for (const p of paths) {
-        if (turnOn) selectedLogs.add(p);
-        else selectedLogs.delete(p);
-      }
-      saveSelectedLogs();
-      renderLogsList();
-      updateLogsHeading();
-      render();
-    });
-    opLabel.append(opCb, document.createTextNode(`${op} (${paths.length})`));
-    li.appendChild(opLabel);
-
-    const childUl = document.createElement("ul");
-    childUl.className = "op-children";
-    for (const p of paths) {
-      const childLi = document.createElement("li");
-      const row = document.createElement("label");
-      row.className = "log-row";
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = selectedLogs.has(p);
-      cb.addEventListener("change", () => {
-        if (cb.checked) selectedLogs.add(p);
-        else selectedLogs.delete(p);
-        saveSelectedLogs();
-        renderLogsList();
-        updateLogsHeading();
-        render();
-      });
-      row.dataset.path = p;
-      const labelSpan = document.createElement("span");
-      labelSpan.className = "label";
-      labelSpan.textContent = logLabel(p);
-      const swatches = document.createElement("span");
-      swatches.className = "swatches";
-      row.append(cb, labelSpan, swatches);
-      childLi.appendChild(row);
-      childUl.appendChild(childLi);
-    }
-    li.appendChild(childUl);
-    ul.appendChild(li);
-  }
+  for (const [op, paths] of operatorGroups) ul.appendChild(operatorNode(op, paths));
   logsList.appendChild(ul);
   populateSidebarSwatches();
   updateLogRowStates();
 }
 
 // Whether a log contributes any datapoint to the chart as currently configured:
-// some sample inside the time range that survives the >99.99% filter. Logs whose
-// data hasn't been fetched yet count as visible, since we can't tell.
-function pathHasVisiblePoints(path, from, to, hideHigh) {
+// some sample inside the time range that survives the >99.99% filter. Pass an
+// endpoint to ask about just that column. Logs whose data hasn't been fetched
+// yet count as visible, since we can't tell.
+function pathHasVisiblePoints(path, from, to, hideHigh, endpoint) {
   const d = cache.get(path);
   if (!d) return true;
+  let first = 1, last = d.header.length - 1;
+  if (endpoint != null) {
+    first = last = d.header.indexOf(endpoint);
+    if (first < 1) return false;
+  }
   for (const r of d.rows) {
     const t = r[0];
     if ((from != null && t < from) || (to != null && t > to)) continue;
-    for (let ci = 1; ci < d.header.length; ci++) {
+    for (let ci = first; ci <= last; ci++) {
       const uptime = r[ci];
       if (uptime == null) continue;
       if (hideHigh && uptime > HIDE_ABOVE) continue;
@@ -279,30 +446,76 @@ function pathHasVisiblePoints(path, from, to, hideHigh) {
   return false;
 }
 
-// Grey out logs (and operators whose logs are all greyed) with nothing to show.
+// Lowest and highest uptime seen in the time range, for a whole log or one of
+// its endpoints. Independent of the >99.99% filter, so a greyed-out row still
+// says what it's sitting at. Null when there's no data (or none fetched yet).
+function uptimeRange(path, from, to, endpoint) {
+  const d = cache.get(path);
+  if (!d) return null;
+  let first = 1, last = d.header.length - 1;
+  if (endpoint != null) {
+    first = last = d.header.indexOf(endpoint);
+    if (first < 1) return null;
+  }
+  let min = Infinity, max = -Infinity;
+  for (const r of d.rows) {
+    const t = r[0];
+    if ((from != null && t < from) || (to != null && t > to)) continue;
+    for (let ci = first; ci <= last; ci++) {
+      const uptime = r[ci];
+      if (uptime == null) continue;
+      if (uptime < min) min = uptime;
+      if (uptime > max) max = uptime;
+    }
+  }
+  return min === Infinity ? null : { min, max };
+}
+
+function mergeRanges(ranges) {
+  let merged = null;
+  for (const r of ranges) {
+    if (!r) continue;
+    if (!merged) merged = { min: r.min, max: r.max };
+    else {
+      merged.min = Math.min(merged.min, r.min);
+      merged.max = Math.max(merged.max, r.max);
+    }
+  }
+  return merged;
+}
+
+// "99.4% - 100.0%", collapsed to one value when both ends round the same.
+function formatRange(range) {
+  if (!range) return "";
+  const lo = range.min.toFixed(1), hi = range.max.toFixed(1);
+  return lo === hi ? `${lo}%` : `${lo}% - ${hi}%`;
+}
+
+// Grey out rows with nothing to show: endpoints and logs with no datapoints in
+// the current view, and operators none of whose logs have any. Also refreshes
+// each row's uptime range, which moves with the time range.
 function updateLogRowStates() {
   const from = inputToUnix(fromInp.value);
   const to = inputToUnix(toInp.value);
   const hideHigh = hideHighInp.checked;
-  for (const li of logsList.querySelectorAll(":scope > ul > li")) {
-    const rows = li.querySelectorAll(".log-row[data-path]");
-    let anyVisible = false;
-    for (const row of rows) {
-      const visible = pathHasVisiblePoints(row.dataset.path, from, to, hideHigh);
-      row.classList.toggle("no-data", !visible);
-      if (visible) anyVisible = true;
-    }
-    const opRow = li.querySelector(".op-row");
-    if (opRow) opRow.classList.toggle("no-data", rows.length > 0 && !anyVisible);
+  const memo = new Map();
+  const rangeFor = (path, endpoint) => {
+    const key = endpoint == null ? path : `${path} ${endpoint}`;
+    if (!memo.has(key)) memo.set(key, uptimeRange(path, from, to, endpoint));
+    return memo.get(key);
+  };
+  const setRange = (row, range) => { row.querySelector(".range").textContent = formatRange(range); };
+  for (const row of logsList.querySelectorAll(".tree-row[data-path]")) {
+    const { path, endpoint } = row.dataset;
+    row.classList.toggle("no-data", !pathHasVisiblePoints(path, from, to, hideHigh, endpoint));
+    setRange(row, rangeFor(path, endpoint));
   }
-}
-
-function visiblePaths() {
-  const q = logsFilter.value.trim().toLowerCase();
-  if (!q) return allLogPaths.slice();
-  return allLogPaths.filter(p =>
-    logLabel(p).toLowerCase().includes(q) || operatorFor(p).toLowerCase().includes(q)
-  );
+  for (const row of logsList.querySelectorAll(".tree-row[data-op]")) {
+    const paths = operatorGroups.get(row.dataset.op) || [];
+    const anyVisible = paths.some(p => pathHasVisiblePoints(p, from, to, hideHigh));
+    row.classList.toggle("no-data", paths.length > 0 && !anyVisible);
+    setRange(row, mergeRanges(paths.map(p => rangeFor(p))));
+  }
 }
 
 const cache = new Map();
@@ -452,8 +665,10 @@ async function render() {
     const label = logLabel(path);
     const rowByTs = new Map(d.rows.map(r => [r[0], r]));
     const color = colorFor(op, idxInOp, opSize);
+    const hidden = hiddenFor(path);
     for (let ci = 1; ci < d.header.length; ci++) {
       const endpoint = d.header[ci];
+      if (hidden.has(endpoint)) continue;
       const ys = new Array(timestamps.length).fill(null);
       const uptimes = new Array(timestamps.length).fill(null);
       for (const t of timestamps) {
@@ -637,6 +852,7 @@ async function init() {
   }
   const idx = await resp.json();
   allLogPaths = Object.keys(idx).sort();
+  operatorGroups = groupByOperator(allLogPaths);
 
   let stored = null;
   try {
@@ -648,7 +864,17 @@ async function init() {
     for (const p of stored) if (known.has(p)) selectedLogs.add(p);
   } else {
     for (const p of allLogPaths) selectedLogs.add(p);
-    saveSelectedLogs();
+    saveSelection();
+  }
+  let storedHidden = null;
+  try {
+    const raw = localStorage.getItem(HIDDEN_ENDPOINTS_KEY);
+    if (raw != null) storedHidden = JSON.parse(raw);
+  } catch {}
+  if (storedHidden && typeof storedHidden === "object") {
+    for (const [p, eps] of Object.entries(storedHidden)) {
+      if (selectedLogs.has(p) && Array.isArray(eps) && eps.length) hiddenEndpoints.set(p, new Set(eps));
+    }
   }
   setRange("week");
   try { hideHighInp.checked = localStorage.getItem(HIDE_HIGH_KEY) === "1"; } catch {}
@@ -666,27 +892,13 @@ async function init() {
     try { localStorage.setItem(HIDE_HIGH_KEY, hideHighInp.checked ? "1" : "0"); } catch {}
     render();
   });
-  logsFilter.addEventListener("input", renderLogsList);
   document.getElementById("logs-all").addEventListener("click", () => {
-    for (const p of visiblePaths()) selectedLogs.add(p);
-    saveSelectedLogs();
-    renderLogsList();
-    updateLogsHeading();
-    render();
+    for (const p of allLogPaths) setLogSelected(p, true);
+    selectionChanged();
   });
   document.getElementById("logs-none").addEventListener("click", () => {
-    for (const p of visiblePaths()) selectedLogs.delete(p);
-    saveSelectedLogs();
-    renderLogsList();
-    updateLogsHeading();
-    render();
-  });
-  document.getElementById("logs-clear").addEventListener("click", () => {
-    selectedLogs.clear();
-    saveSelectedLogs();
-    renderLogsList();
-    updateLogsHeading();
-    render();
+    for (const p of allLogPaths) setLogSelected(p, false);
+    selectionChanged();
   });
   fromInp.addEventListener("change", render);
   toInp.addEventListener("change", render);
