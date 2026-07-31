@@ -62,7 +62,11 @@
   .op-row { display: block; padding: 0.15em 0; cursor: pointer; font-size: 0.9em; font-weight: 600; }
   .op-row input { margin-right: 0.4em; vertical-align: middle; }
   .op-children { padding-left: 1.4em; }
+  .logs-head { display: flex; align-items: baseline; gap: 0.6em; flex-wrap: wrap; }
+  .logs-head label { display: flex; align-items: center; gap: 0.3em; font-size: 0.85em; cursor: pointer; }
   .log-row { display: flex; align-items: center; gap: 0.4em; padding: 0.1em 0; cursor: pointer; font-size: 0.9em; }
+  /* Logs contributing nothing to the current view (out of range, or fully filtered). */
+  .op-row.no-data, .log-row.no-data .label { color: #aaa; }
   .log-row .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .swatches { display: inline-flex; gap: 2px; flex-wrap: wrap; max-width: 6em; }
   .swatch { width: 10px; height: 10px; border-radius: 2px; }
@@ -98,7 +102,10 @@
       <a data-range="3months">3 Months</a>,
       <a data-range="year">Year</a>
     </div>
-    <h2 id="logs-heading">Logs (0)</h2>
+    <div class="logs-head">
+      <h2 id="logs-heading">Logs (0)</h2>
+      <label><input type="checkbox" id="hide-high"> Hide data &gt; 99.99%</label>
+    </div>
     <input id="logs-filter" type="search" placeholder="Filter logs…" aria-label="Filter logs">
     <div class="logs-actions">
       <button type="button" id="logs-all">All visible</button>
@@ -118,6 +125,7 @@
 const logsHeading = document.getElementById("logs-heading");
 const logsList = document.getElementById("logs-list");
 const logsFilter = document.getElementById("logs-filter");
+const hideHighInp = document.getElementById("hide-high");
 const fromInp = document.getElementById("from");
 const toInp = document.getElementById("to");
 const chartDiv = document.getElementById("chart");
@@ -161,6 +169,9 @@ const SIDEBAR_MAX_FRAC = 0.7;
 let allLogPaths = [];
 const selectedLogs = new Set();
 const SELECTED_LOGS_KEY = "ctuptime.selectedLogs";
+const HIDE_HIGH_KEY = "ctuptime.hideHigh";
+// Uptimes strictly above this are dropped when "Hide data > 99.99%" is on.
+const HIDE_ABOVE = 99.99;
 
 function saveSelectedLogs() {
   try {
@@ -246,6 +257,44 @@ function renderLogsList() {
   }
   logsList.appendChild(ul);
   populateSidebarSwatches();
+  updateLogRowStates();
+}
+
+// Whether a log contributes any datapoint to the chart as currently configured:
+// some sample inside the time range that survives the >99.99% filter. Logs whose
+// data hasn't been fetched yet count as visible, since we can't tell.
+function pathHasVisiblePoints(path, from, to, hideHigh) {
+  const d = cache.get(path);
+  if (!d) return true;
+  for (const r of d.rows) {
+    const t = r[0];
+    if ((from != null && t < from) || (to != null && t > to)) continue;
+    for (let ci = 1; ci < d.header.length; ci++) {
+      const uptime = r[ci];
+      if (uptime == null) continue;
+      if (hideHigh && uptime > HIDE_ABOVE) continue;
+      return true;
+    }
+  }
+  return false;
+}
+
+// Grey out logs (and operators whose logs are all greyed) with nothing to show.
+function updateLogRowStates() {
+  const from = inputToUnix(fromInp.value);
+  const to = inputToUnix(toInp.value);
+  const hideHigh = hideHighInp.checked;
+  for (const li of logsList.querySelectorAll(":scope > ul > li")) {
+    const rows = li.querySelectorAll(".log-row[data-path]");
+    let anyVisible = false;
+    for (const row of rows) {
+      const visible = pathHasVisiblePoints(row.dataset.path, from, to, hideHigh);
+      row.classList.toggle("no-data", !visible);
+      if (visible) anyVisible = true;
+    }
+    const opRow = li.querySelector(".op-row");
+    if (opRow) opRow.classList.toggle("no-data", rows.length > 0 && !anyVisible);
+  }
 }
 
 function visiblePaths() {
@@ -258,6 +307,9 @@ function visiblePaths() {
 
 const cache = new Map();
 let plot = null;
+// Bumped by each render() so an in-flight one can bail if superseded (renders
+// overlap when e.g. a resize lands while the first fetch is still going).
+let renderSeq = 0;
 
 function clearErrors() { errorsDiv.textContent = ""; }
 function showError(msg) {
@@ -332,19 +384,24 @@ function setRange(name) {
 }
 
 async function render() {
+  const seq = ++renderSeq;
   clearErrors();
+  const hideHigh = hideHighInp.checked;
   const selected = Array.from(selectedLogs);
   if (plot) { plot.destroy(); plot = null; }
   chartDiv.innerHTML = "";
   populateSidebarSwatches();
+  updateLogRowStates();
   if (selected.length === 0) return;
 
   const results = await Promise.all(selected.map(p =>
     fetchCsv(p).then(d => ({ path: p, data: d }), err => ({ path: p, err }))
   ));
+  if (seq !== renderSeq) return;
   for (const r of results) {
     if (r.err) showError(`Loading ${logLabel(r.path)}: ${r.err.message}`);
   }
+  updateLogRowStates();
   const ok = results.filter(r => r.data);
   if (ok.length === 0) return;
   ok.sort((a, b) => {
@@ -403,7 +460,7 @@ async function render() {
         const r = rowByTs.get(t);
         if (r) {
           const uptime = r[ci];
-          if (uptime != null) {
+          if (uptime != null && !(hideHigh && uptime > HIDE_ABOVE)) {
             uptimes[tsIndex.get(t)] = uptime;
             ys[tsIndex.get(t)] = Math.max(AXIS_TOP, 100 - uptime);
           }
@@ -412,7 +469,10 @@ async function render() {
       series.push({
         label: `${label} ${endpoint}`,
         stroke: color,
-        spanGaps: true,
+        // Normally gaps just mean "this log has no sample at that timestamp", so
+        // bridge them. While filtering, gaps are the hidden samples themselves,
+        // so leave them open rather than drawing lines through hidden data.
+        spanGaps: !hideHigh,
         _path: path,
         _endpoint: endpoint,
         _uptimes: uptimes,
@@ -591,6 +651,7 @@ async function init() {
     saveSelectedLogs();
   }
   setRange("week");
+  try { hideHighInp.checked = localStorage.getItem(HIDE_HIGH_KEY) === "1"; } catch {}
   renderLogsList();
   updateLogsHeading();
   render();
@@ -599,6 +660,10 @@ async function init() {
     const a = e.target.closest("a[data-range]");
     if (!a) return;
     setRange(a.dataset.range);
+    render();
+  });
+  hideHighInp.addEventListener("change", () => {
+    try { localStorage.setItem(HIDE_HIGH_KEY, hideHighInp.checked ? "1" : "0"); } catch {}
     render();
   });
   logsFilter.addEventListener("input", renderLogsList);
