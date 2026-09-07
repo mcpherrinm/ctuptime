@@ -35,7 +35,7 @@ jobs:
         run: |-
           git config user.name "Automated"
           git config user.email "actions@users.noreply.github.com"
-          git add data metrics
+          git add data metrics feed.xml events.json
           git diff --cached --quiet && exit 0
           timestamp=$(date -u)
           git commit -m "Latest data: ${timestamp}"

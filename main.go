@@ -86,7 +86,7 @@ func load(ctx context.Context) (map[string][]point, time.Time, error) {
 const timestampHeader = "timestamp"
 
 func write(log string, points []point, t time.Time) error {
-	file := filepath.Join("data", url.PathEscape(log)+".csv")
+	file := filepath.Join(dataDir, url.PathEscape(log)+".csv")
 
 	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
@@ -194,7 +194,7 @@ func writeIndex(data map[string][]point, t time.Time) error {
 	}
 
 	for log := range data {
-		idx[filepath.Join("data", url.PathEscape(log)+".csv")] = t.Unix()
+		idx[filepath.Join(dataDir, url.PathEscape(log)+".csv")] = t.Unix()
 	}
 
 	if _, err := f.Seek(0, io.SeekStart); err != nil {
@@ -265,6 +265,10 @@ func main() {
 	}
 	if err := writeMetrics(data, lastMod); err != nil {
 		slog.Error("failed writing metrics", slog.String("error", err.Error()))
+		failed = true
+	}
+	if err := updateEvents(dataDir, stateFile, feedFile, lastMod); err != nil {
+		slog.Error("failed updating event feed", slog.String("error", err.Error()))
 		failed = true
 	}
 	if failed {

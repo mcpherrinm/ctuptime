@@ -1,0 +1,114 @@
+{
+  "evaluated": "2026-09-07T16:18:00Z",
+  "events": [
+    {
+      "id": "tag:mcpherrinm.github.io,2026-07-16:ctuptime/ipng.ch/1784230080",
+      "operator": "ipng.ch",
+      "published": "2026-07-16T19:28:00Z",
+      "since": "2026-07-15T17:08:00Z",
+      "logs": {
+        "https://lipase2026h1.log.ct.ipng.ch/": {
+          "get-roots": 0
+        },
+        "https://rennet2026h1.log.ct.ipng.ch/": {
+          "get-roots": 0
+        }
+      }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-07-19:ctuptime/digicert.com/1784431680",
+      "operator": "digicert.com",
+      "published": "2026-07-19T03:28:00Z",
+      "since": "2026-07-18T03:18:00Z",
+      "logs": {
+        "https://sphinx.ct.digicert.com/2026h2/": {
+          "add-chain": 27.2727,
+          "add-pre-chain": 18.1818,
+          "get-entries": 79.2857
+        }
+      }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
+      "operator": "sectigo.com",
+      "published": "2026-08-09T06:58:00Z",
+      "since": "2026-08-09T01:08:00Z",
+      "logs": {
+        "https://elephant2026h2.ct.sectigo.com/": {
+          "add-pre-chain": 81.8182,
+          "get-entries": 89.8551,
+          "get-sth-consistency": 88.0597
+        }
+      }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-08-18:ctuptime/sectigo.com/1787033880",
+      "operator": "sectigo.com",
+      "published": "2026-08-18T06:18:00Z",
+      "since": "2026-08-17T16:28:00Z",
+      "logs": {
+        "https://elephant2026h2.ct.sectigo.com/": {
+          "add-chain": 54.5455,
+          "add-pre-chain": 72.7273,
+          "get-sth-consistency": 88.4892
+        },
+        "https://tiger2026h2.ct.sectigo.com/": {
+          "add-chain": 72.7273,
+          "add-pre-chain": 72.7273
+        }
+      }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-09-02:ctuptime/sectigo.com/1788364680",
+      "operator": "sectigo.com",
+      "published": "2026-09-02T15:58:00Z",
+      "since": "2026-09-01T12:08:00Z",
+      "logs": {
+        "https://elephant2026h2.ct.sectigo.com/": {
+          "add-chain": 8.3333,
+          "add-pre-chain": 16.6667,
+          "get-entries": 52.8571,
+          "get-sth": 78.4173,
+          "get-sth-consistency": 49.6403
+        },
+        "https://tiger2026h2.ct.sectigo.com/": {
+          "add-chain": 63.6364,
+          "add-pre-chain": 41.6667,
+          "get-entries": 75.9124,
+          "get-sth-consistency": 66.6667
+        }
+      }
+    }
+  ],
+  "reported": {
+    "https://elephant2026h2.ct.sectigo.com/ add-chain 1786984080": "2026-08-17T16:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-chain 1788290280": "2026-09-01T19:18:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786237680": "2026-08-09T01:08:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786984080": "2026-08-17T16:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1788300480": "2026-09-01T22:08:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786258680": "2026-08-09T06:58:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786267680": "2026-08-09T09:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786280280": "2026-08-09T12:58:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786289280": "2026-08-09T15:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786306680": "2026-08-09T20:18:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786642080": "2026-08-13T17:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786658280": "2026-08-13T21:58:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-entries 1788300480": "2026-09-01T22:08:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-sth 1788328080": "2026-09-02T05:48:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1786613280": "2026-08-13T09:28:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1787033880": "2026-08-18T06:18:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1788290280": "2026-09-01T19:18:00Z",
+    "https://lipase2026h1.log.ct.ipng.ch/ get-roots 1784135280": "2026-07-15T17:08:00Z",
+    "https://rennet2026h1.log.ct.ipng.ch/ get-roots 1784141280": "2026-07-15T18:48:00Z",
+    "https://sphinx.ct.digicert.com/2026h2/ add-chain 1784777880": "2026-07-23T03:38:00Z",
+    "https://sphinx.ct.digicert.com/2026h2/ add-pre-chain 1784777880": "2026-07-23T03:38:00Z",
+    "https://sphinx.ct.digicert.com/2026h2/ get-entries 1784344680": "2026-07-18T03:18:00Z",
+    "https://sphinx.ct.digicert.com/2026h2/ get-entries 1784690880": "2026-07-22T03:28:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-chain 1788264480": "2026-09-01T12:08:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1787033880": "2026-08-18T06:18:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1788290280": "2026-09-01T19:18:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ get-entries 1788290280": "2026-09-01T19:18:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1788280080": "2026-09-01T16:28:00Z"
+  }
+}
