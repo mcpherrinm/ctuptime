@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-10-05T16:18:00Z",
+  "evaluated": "2026-10-05T22:18:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-07-16:ctuptime/ipng.ch/1784230080",
@@ -78,9 +78,31 @@
           "get-sth-consistency": 66.6667
         }
       }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-10-05:ctuptime/googleapis.com/1791238680",
+      "operator": "googleapis.com",
+      "published": "2026-10-05T22:18:00Z",
+      "since": "2026-10-04T23:48:00Z",
+      "logs": {
+        "https://ct.googleapis.com/logs/eu1/xenon2026h2/": {
+          "get-entries": 87.0504,
+          "get-sth": 86.4286
+        },
+        "https://ct.googleapis.com/logs/eu1/xenon2027h1/": {
+          "get-entries": 82.0144,
+          "get-sth": 87.8571,
+          "get-sth-consistency": 87.7698
+        }
+      }
     }
   ],
   "reported": {
+    "https://ct.googleapis.com/logs/eu1/xenon2026h2/ get-entries 1791157680": "2026-10-04T23:48:00Z",
+    "https://ct.googleapis.com/logs/eu1/xenon2026h2/ get-sth 1791182880": "2026-10-05T06:48:00Z",
+    "https://ct.googleapis.com/logs/eu1/xenon2027h1/ get-entries 1791182880": "2026-10-05T06:48:00Z",
+    "https://ct.googleapis.com/logs/eu1/xenon2027h1/ get-sth 1791238680": "2026-10-05T22:18:00Z",
+    "https://ct.googleapis.com/logs/eu1/xenon2027h1/ get-sth-consistency 1791182880": "2026-10-05T06:48:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1788290280": "2026-09-01T19:18:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786237680": "2026-08-09T01:08:00Z",

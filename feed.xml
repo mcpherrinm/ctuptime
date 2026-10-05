@@ -2,12 +2,21 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>CT Uptime incidents</title>
   <id>https://mcpherrinm.github.io/ctuptime/feed.xml</id>
-  <updated>2026-09-02T15:58:00Z</updated>
+  <updated>2026-10-05T22:18:00Z</updated>
   <author>
     <name>CT Uptime</name>
   </author>
   <link href="https://mcpherrinm.github.io/ctuptime/feed.xml" rel="self" type="application/atom+xml"></link>
   <link href="https://mcpherrinm.github.io/ctuptime/" rel="alternate" type="text/html"></link>
+  <entry>
+    <id>tag:mcpherrinm.github.io,2026-10-05:ctuptime/googleapis.com/1791238680</id>
+    <title>googleapis.com: 2 logs below 90.00% uptime, lowest 82.01%</title>
+    <link href="https://mcpherrinm.github.io/ctuptime/" rel="alternate" type="text/html"></link>
+    <published>2026-10-05T22:18:00Z</published>
+    <updated>2026-10-05T22:18:00Z</updated>
+    <summary type="text">Since 2026-10-04 23:48 UTC:&#xA;ct.googleapis.com/logs/eu1/xenon2026h2: get-sth 86.43%, get-entries 87.05%&#xA;ct.googleapis.com/logs/eu1/xenon2027h1: get-entries 82.01%, get-sth-consistency 87.77%, get-sth 87.86%</summary>
+    <content type="html">&lt;p&gt;Since 2026-10-04 23:48 UTC:&lt;/p&gt;&#xA;&lt;p&gt;ct.googleapis.com/logs/eu1/xenon2026h2: get-sth 86.43%, get-entries 87.05%&lt;/p&gt;&#xA;&lt;p&gt;ct.googleapis.com/logs/eu1/xenon2027h1: get-entries 82.01%, get-sth-consistency 87.77%, get-sth 87.86%&lt;/p&gt;</content>
+  </entry>
   <entry>
     <id>tag:mcpherrinm.github.io,2026-09-02:ctuptime/sectigo.com/1788364680</id>
     <title>sectigo.com: 2 logs below 90.00% uptime, lowest 8.33%</title>
