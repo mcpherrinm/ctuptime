@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-10-05T22:18:00Z",
+  "evaluated": "2026-10-06T01:38:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-07-16:ctuptime/ipng.ch/1784230080",
@@ -87,11 +87,11 @@
       "logs": {
         "https://ct.googleapis.com/logs/eu1/xenon2026h2/": {
           "get-entries": 87.0504,
-          "get-sth": 86.4286
+          "get-sth": 83.5714
         },
         "https://ct.googleapis.com/logs/eu1/xenon2027h1/": {
           "get-entries": 82.0144,
-          "get-sth": 87.8571,
+          "get-sth": 87.1429,
           "get-sth-consistency": 87.7698
         }
       }
