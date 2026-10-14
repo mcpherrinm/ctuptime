@@ -1,20 +1,6 @@
 {
-  "evaluated": "2026-10-14T17:38:00Z",
+  "evaluated": "2026-10-14T21:28:00Z",
   "events": [
-    {
-      "id": "tag:mcpherrinm.github.io,2026-07-16:ctuptime/ipng.ch/1784230080",
-      "operator": "ipng.ch",
-      "published": "2026-07-16T19:28:00Z",
-      "since": "2026-07-15T17:08:00Z",
-      "logs": {
-        "https://lipase2026h1.log.ct.ipng.ch/": {
-          "get-roots": 0
-        },
-        "https://rennet2026h1.log.ct.ipng.ch/": {
-          "get-roots": 0
-        }
-      }
-    },
     {
       "id": "tag:mcpherrinm.github.io,2026-07-19:ctuptime/digicert.com/1784431680",
       "operator": "digicert.com",

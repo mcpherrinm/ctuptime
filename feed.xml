@@ -53,13 +53,4 @@
     <summary type="text">Since 2026-07-18 03:18 UTC:&#xA;sphinx.ct.digicert.com/2026h2: add-pre-chain 18.18%, add-chain 27.27%, get-entries 79.29%</summary>
     <content type="html">&lt;p&gt;Since 2026-07-18 03:18 UTC:&lt;/p&gt;&#xA;&lt;p&gt;sphinx.ct.digicert.com/2026h2: add-pre-chain 18.18%, add-chain 27.27%, get-entries 79.29%&lt;/p&gt;</content>
   </entry>
-  <entry>
-    <id>tag:mcpherrinm.github.io,2026-07-16:ctuptime/ipng.ch/1784230080</id>
-    <title>ipng.ch: 2 logs below 90.00% uptime, lowest 0.00%</title>
-    <link href="https://mcpherrinm.github.io/ctuptime/" rel="alternate" type="text/html"></link>
-    <published>2026-07-16T19:28:00Z</published>
-    <updated>2026-07-16T19:28:00Z</updated>
-    <summary type="text">Since 2026-07-15 17:08 UTC:&#xA;lipase2026h1.log.ct.ipng.ch: get-roots 0.00%&#xA;rennet2026h1.log.ct.ipng.ch: get-roots 0.00%</summary>
-    <content type="html">&lt;p&gt;Since 2026-07-15 17:08 UTC:&lt;/p&gt;&#xA;&lt;p&gt;lipase2026h1.log.ct.ipng.ch: get-roots 0.00%&lt;/p&gt;&#xA;&lt;p&gt;rennet2026h1.log.ct.ipng.ch: get-roots 0.00%&lt;/p&gt;</content>
-  </entry>
 </feed>
