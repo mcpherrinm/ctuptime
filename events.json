@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-10-16T00:28:00Z",
+  "evaluated": "2026-10-16T05:58:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-07-19:ctuptime/digicert.com/1784431680",
@@ -108,7 +108,6 @@
     "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1788290280": "2026-09-01T19:18:00Z",
     "https://sphinx.ct.digicert.com/2026h2/ add-chain 1784777880": "2026-07-23T03:38:00Z",
     "https://sphinx.ct.digicert.com/2026h2/ add-pre-chain 1784777880": "2026-07-23T03:38:00Z",
-    "https://sphinx.ct.digicert.com/2026h2/ get-entries 1784344680": "2026-07-18T03:18:00Z",
     "https://sphinx.ct.digicert.com/2026h2/ get-entries 1784690880": "2026-07-22T03:28:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1788264480": "2026-09-01T12:08:00Z",
