@@ -1,19 +1,6 @@
 {
-  "evaluated": "2026-10-16T23:38:00Z",
+  "evaluated": "2026-10-17T05:38:00Z",
   "events": [
-    {
-      "id": "tag:mcpherrinm.github.io,2026-07-19:ctuptime/digicert.com/1784431680",
-      "operator": "digicert.com",
-      "published": "2026-07-19T03:28:00Z",
-      "since": "2026-07-18T03:18:00Z",
-      "logs": {
-        "https://sphinx.ct.digicert.com/2026h2/": {
-          "add-chain": 27.2727,
-          "add-pre-chain": 18.1818,
-          "get-entries": 79.2857
-        }
-      }
-    },
     {
       "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
       "operator": "sectigo.com",
