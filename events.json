@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-10-19T04:58:00Z",
+  "evaluated": "2026-10-19T09:28:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
@@ -68,6 +68,19 @@
           "get-sth-consistency": 87.7698
         }
       }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-10-19:ctuptime/sectigo.com/1792402080",
+      "operator": "sectigo.com",
+      "published": "2026-10-19T09:28:00Z",
+      "since": "2026-10-18T09:28:00Z",
+      "logs": {
+        "https://tiger2026h2.ct.sectigo.com/": {
+          "add-chain": 41.6667,
+          "add-pre-chain": 58.3333,
+          "get-sth-consistency": 72.4638
+        }
+      }
     }
   ],
   "reported": {
@@ -98,9 +111,12 @@
     "https://sphinx.ct.digicert.com/2026h2/ get-entries 1784690880": "2026-07-22T03:28:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1788264480": "2026-09-01T12:08:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-chain 1792315680": "2026-10-18T09:28:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1788290280": "2026-09-01T19:18:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1792331880": "2026-10-18T13:58:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-entries 1788290280": "2026-09-01T19:18:00Z",
-    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1788280080": "2026-09-01T16:28:00Z"
+    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1788280080": "2026-09-01T16:28:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1792331880": "2026-10-18T13:58:00Z"
   }
 }
