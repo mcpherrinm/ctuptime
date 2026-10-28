@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-10-27T23:38:00Z",
+  "evaluated": "2026-10-28T06:38:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
@@ -81,6 +81,21 @@
           "get-sth-consistency": 72.4638
         }
       }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-10-28:ctuptime/sectigo.com/1793169480",
+      "operator": "sectigo.com",
+      "published": "2026-10-28T06:38:00Z",
+      "since": "2026-10-27T04:58:00Z",
+      "logs": {
+        "https://elephant2026h2.ct.sectigo.com/": {
+          "add-pre-chain": 63.6364
+        },
+        "https://tiger2026h2.ct.sectigo.com/": {
+          "add-chain": 72.7273,
+          "add-pre-chain": 72.7273
+        }
+      }
     }
   ],
   "reported": {
@@ -94,6 +109,7 @@
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786237680": "2026-08-09T01:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1788300480": "2026-09-01T22:08:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1793077080": "2026-10-27T04:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786258680": "2026-08-09T06:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786267680": "2026-08-09T09:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786280280": "2026-08-09T12:58:00Z",
@@ -109,9 +125,11 @@
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1788264480": "2026-09-01T12:08:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1792315680": "2026-10-18T09:28:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-chain 1793144280": "2026-10-27T23:38:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1788290280": "2026-09-01T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1792331880": "2026-10-18T13:58:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1793144280": "2026-10-27T23:38:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-entries 1788290280": "2026-09-01T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1788280080": "2026-09-01T16:28:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1792331880": "2026-10-18T13:58:00Z"
