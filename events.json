@@ -1,19 +1,6 @@
 {
-  "evaluated": "2026-11-07T02:48:00Z",
+  "evaluated": "2026-11-07T09:28:00Z",
   "events": [
-    {
-      "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
-      "operator": "sectigo.com",
-      "published": "2026-08-09T06:58:00Z",
-      "since": "2026-08-09T01:08:00Z",
-      "logs": {
-        "https://elephant2026h2.ct.sectigo.com/": {
-          "add-pre-chain": 81.8182,
-          "get-entries": 89.8551,
-          "get-sth-consistency": 88.0597
-        }
-      }
-    },
     {
       "id": "tag:mcpherrinm.github.io,2026-08-18:ctuptime/sectigo.com/1787033880",
       "operator": "sectigo.com",
@@ -109,7 +96,6 @@
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1788300480": "2026-09-01T22:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1793077080": "2026-10-27T04:58:00Z",
-    "https://elephant2026h2.ct.sectigo.com/ get-entries 1786258680": "2026-08-09T06:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786267680": "2026-08-09T09:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786280280": "2026-08-09T12:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786289280": "2026-08-09T15:28:00Z",
