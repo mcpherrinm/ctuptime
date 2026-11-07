@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-11-06T22:58:00Z",
+  "evaluated": "2026-11-07T02:48:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-08-09:ctuptime/sectigo.com/1786258680",
@@ -106,7 +106,6 @@
     "https://ct.googleapis.com/logs/eu1/xenon2027h1/ get-sth-consistency 1791182880": "2026-10-05T06:48:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1788290280": "2026-09-01T19:18:00Z",
-    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786237680": "2026-08-09T01:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1788300480": "2026-09-01T22:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1793077080": "2026-10-27T04:58:00Z",
