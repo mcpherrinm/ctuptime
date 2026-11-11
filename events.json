@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-11-11T06:28:00Z",
+  "evaluated": "2026-11-11T13:18:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-08-18:ctuptime/sectigo.com/1787033880",
@@ -100,7 +100,6 @@
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1786658280": "2026-08-13T21:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1788300480": "2026-09-01T22:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth 1788328080": "2026-09-02T05:48:00Z",
-    "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1786613280": "2026-08-13T09:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1787033880": "2026-08-18T06:18:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1788290280": "2026-09-01T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
