@@ -1,5 +1,5 @@
 {
-  "evaluated": "2026-11-14T16:58:00Z",
+  "evaluated": "2026-11-14T21:28:00Z",
   "events": [
     {
       "id": "tag:mcpherrinm.github.io,2026-08-18:ctuptime/sectigo.com/1787033880",
@@ -83,6 +83,69 @@
           "add-pre-chain": 72.7273
         }
       }
+    },
+    {
+      "id": "tag:mcpherrinm.github.io,2026-11-14:ctuptime/sectigo.com/1794691680",
+      "operator": "sectigo.com",
+      "published": "2026-11-14T21:28:00Z",
+      "since": "2026-11-13T19:18:00Z",
+      "logs": {
+        "https://elephant2026h2.ct.sectigo.com/": {
+          "add-chain": 36.3636,
+          "add-pre-chain": 16.6667
+        },
+        "https://elephant2027h1.ct.sectigo.com/": {
+          "add-chain": 50,
+          "add-pre-chain": 50
+        },
+        "https://elephant2027h2.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://monument2027h1.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://monument2027h2.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://monument2028h1.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://monument2028h2.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://statue2027h1.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://statue2027h2.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://statue2028h1.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://statue2028h2.sub.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        },
+        "https://tiger2026h2.ct.sectigo.com/": {
+          "add-chain": 8.3333,
+          "add-pre-chain": 0
+        },
+        "https://tiger2027h1.ct.sectigo.com/": {
+          "add-chain": 45.4545
+        },
+        "https://tiger2027h2.ct.sectigo.com/": {
+          "add-chain": 0,
+          "add-pre-chain": 0
+        }
+      }
     }
   ],
   "reported": {
@@ -93,23 +156,50 @@
     "https://ct.googleapis.com/logs/eu1/xenon2027h1/ get-sth-consistency 1791182880": "2026-10-05T06:48:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-chain 1788290280": "2026-09-01T19:18:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-chain 1794621480": "2026-11-14T01:58:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1786984080": "2026-08-17T16:28:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1788300480": "2026-09-01T22:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1793077080": "2026-10-27T04:58:00Z",
+    "https://elephant2026h2.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-entries 1788300480": "2026-09-01T22:08:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth 1788328080": "2026-09-02T05:48:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1787033880": "2026-08-18T06:18:00Z",
     "https://elephant2026h2.ct.sectigo.com/ get-sth-consistency 1788290280": "2026-09-01T19:18:00Z",
+    "https://elephant2027h1.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://elephant2027h1.ct.sectigo.com/ add-pre-chain 1794621480": "2026-11-14T01:58:00Z",
+    "https://elephant2027h2.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://elephant2027h2.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2027h1.sub.ct.sectigo.com/ add-chain 1794621480": "2026-11-14T01:58:00Z",
+    "https://monument2027h1.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2027h2.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2027h2.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2028h1.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2028h1.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2028h2.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://monument2028h2.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2027h1.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2027h1.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2027h2.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2027h2.sub.ct.sectigo.com/ add-pre-chain 1794621480": "2026-11-14T01:58:00Z",
+    "https://statue2028h1.sub.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2028h1.sub.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://statue2028h2.sub.ct.sectigo.com/ add-chain 1794621480": "2026-11-14T01:58:00Z",
+    "https://statue2028h2.sub.ct.sectigo.com/ add-pre-chain 1794621480": "2026-11-14T01:58:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1788264480": "2026-09-01T12:08:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1792315680": "2026-10-18T09:28:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-chain 1793144280": "2026-10-27T23:38:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1787033880": "2026-08-18T06:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1788290280": "2026-09-01T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1792331880": "2026-10-18T13:58:00Z",
     "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1793144280": "2026-10-27T23:38:00Z",
+    "https://tiger2026h2.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-entries 1788290280": "2026-09-01T19:18:00Z",
     "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1788280080": "2026-09-01T16:28:00Z",
-    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1792331880": "2026-10-18T13:58:00Z"
+    "https://tiger2026h2.ct.sectigo.com/ get-sth-consistency 1792331880": "2026-10-18T13:58:00Z",
+    "https://tiger2027h1.ct.sectigo.com/ add-chain 1794621480": "2026-11-14T01:58:00Z",
+    "https://tiger2027h2.ct.sectigo.com/ add-chain 1794597480": "2026-11-13T19:18:00Z",
+    "https://tiger2027h2.ct.sectigo.com/ add-pre-chain 1794597480": "2026-11-13T19:18:00Z"
   }
 }
